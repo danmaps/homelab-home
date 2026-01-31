@@ -11,7 +11,6 @@ const SERVICES = [
 
   { key: 'camreview', name: 'CamReview', port: 3000, path: '/browse' },
   { key: 'schoolscout', name: 'SchoolScout', port: 3434, path: '/' },
-  { key: 'openclaw', name: 'OpenClaw Dashboard', port: 18789, path: '/' },
 ];
 
 function probePort(host, port, timeoutMs = 500) {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Home Lab</title>
+  <title></title>
   <style>
     :root{
       --bg:#0b0f14; --card:#101826; --text:#e9eef6; --muted:#a9b4c1;
@@ -31,10 +31,7 @@
   </style>
 </head>
 <body>
-<header>
-  <h1>Home Lab</h1>
-  <div class="sub">A tiny local dashboard that shows service status + handy links.</div>
-</header>
+<header></header>
 <main>
   <div class="row" style="margin-bottom:10px;">
     <button id="btnRefresh">Refresh</button>
@@ -73,20 +70,20 @@
   function cardForHost(hostLabel, host, data){
     const services = data.services;
     const status = data.results;
-    const key = hostLabel.toLowerCase();
 
     const k = hostLabel === 'Localhost' ? 'localhost' : (hostLabel === 'LAN' ? 'lan' : 'tailscale');
     const s = status[k] || {};
 
-    let html = `
-      <div class="card">
-        <div class="row">
-          <div style="flex:1;">
-            <div class="k">${hostLabel}</div>
-            <div class="mono">${host}</div>
-          </div>
+    const openByDefault = (hostLabel === 'Tailscale');
+    let html = `<details class="card" ${openByDefault ? 'open' : ''}>`;
+    html += `
+      <summary class="row" style="cursor:pointer; list-style:none;">
+        <div style="flex:1;">
+          <div class="k">${hostLabel}</div>
+          <div class="mono">${host}</div>
         </div>
-        <div class="svc">
+      </summary>
+      <div class="svc">
     `;
 
     for(const svc of services){
@@ -101,7 +98,7 @@
       `;
     }
 
-    html += `</div></div>`;
+    html += `</div></details>`;
     return html;
   }
 
