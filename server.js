@@ -56,7 +56,7 @@ async function getIps() {
     }
   }
   if (!lan) {
-    // fallback: first LAN-like IPv4 from any adapter
+    // fallback: first LAN-like IPv4 from any adapter (ignore tailscale 100.x and virtual 172.x)
     const all = Array.from(ipconfig.matchAll(/IPv4 Address[.\s]*:\s*([0-9.]+)/g)).map((m) => m[1]);
     lan = all.find((ip) => ip.startsWith('192.168.') || ip.startsWith('10.')) || '';
   }
