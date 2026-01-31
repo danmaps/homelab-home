@@ -1,9 +1,23 @@
 import express from 'express';
 import net from 'node:net';
 import { execFile } from 'node:child_process';
+import { readFileSync, existsSync } from 'node:fs';
 
 const app = express();
 const PORT = Number(process.env.PORT || 3499);
+
+function loadConfig(){
+  const localPath = 'config.local.json';
+  const path = existsSync(localPath) ? localPath : 'config.json';
+  try {
+    const raw = readFileSync(path, 'utf-8');
+    return JSON.parse(raw);
+  } catch {
+    return { repoUrl: '', telegramUsername: 'danmaps_clawd_bot' };
+  }
+}
+
+const CONFIG = loadConfig();
 
 const SERVICES = [
   // yes, this dashboard should show up in itself (handy for mobile bookmarks)
@@ -90,6 +104,10 @@ app.get('/api/status', async (_req, res) => {
     ips,
     services: SERVICES,
     results,
+    meta: {
+      repoUrl: CONFIG.repoUrl || '',
+      telegramUsername: CONFIG.telegramUsername || 'danmaps_clawd_bot',
+    },
   });
 });
 

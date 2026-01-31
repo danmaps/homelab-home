@@ -35,6 +35,7 @@
 <main>
   <div class="row" style="margin-bottom:10px;">
     <button id="btnRefresh">Refresh</button>
+    <button id="btnReport">Send report</button>
     <span class="pill" id="updated">…</span>
   </div>
 
@@ -46,6 +47,7 @@
   const els = {
     cards: document.getElementById('cards'),
     btnRefresh: document.getElementById('btnRefresh'),
+    btnReport: document.getElementById('btnReport'),
     updated: document.getElementById('updated'),
   };
 
@@ -95,6 +97,45 @@
     return html;
   }
 
+  function esc(s){
+    return String(s || '').replace(/[&<>]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  }
+
+  function summarize(j){
+    const lines = [];
+    lines.push('Homelab report');
+    lines.push('');
+    lines.push(`App: ${location.origin}`);
+    if(j?.meta?.repoUrl) lines.push(`Repo: ${j.meta.repoUrl}`);
+    lines.push(`Updated: ${j.updatedAt}`);
+    lines.push('');
+
+    const order = [
+      ['tailscale', 'Tailscale', j?.ips?.tailscale],
+      ['lan', 'LAN', j?.ips?.lan],
+      ['localhost', 'Localhost', '127.0.0.1'],
+    ];
+
+    for(const [k, label, host] of order){
+      if(k !== 'localhost' && !host) continue;
+      lines.push(`${label}: ${host || ''}`);
+      for(const svc of (j.services || [])){
+        const ok = !!(j?.results?.[k]?.[svc.key]?.ok);
+        lines.push(`- ${svc.name} :${svc.port} ${ok ? 'UP' : 'DOWN'}`);
+      }
+      lines.push('');
+    }
+
+    lines.push('Request: please help me fix what looks off (DOWN services, firewall/bind, etc).');
+    return lines.join('\n');
+  }
+
+  function makeTelegramLink(username, text){
+    const u = (username || '').replace(/^@/, '');
+    const encoded = encodeURIComponent(text);
+    return `https://t.me/${u}?text=${encoded}`;
+  }
+
   async function load(){
     const r = await fetch('/api/status');
     const j = await r.json();
@@ -106,9 +147,19 @@
     cards.push(cardForHost('Localhost', '127.0.0.1', j));
 
     els.cards.innerHTML = cards.join('');
+    return j;
+  }
+
+  async function sendReport(){
+    const j = await load();
+    const msg = summarize(j);
+    const username = j?.meta?.telegramUsername || 'danmaps_clawd_bot';
+    const url = makeTelegramLink(username, msg);
+    window.open(url, '_blank', 'noreferrer');
   }
 
   els.btnRefresh.addEventListener('click', load);
+  els.btnReport.addEventListener('click', sendReport);
   load();
 </script>
 </body>
