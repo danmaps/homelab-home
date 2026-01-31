@@ -150,12 +150,31 @@
     return j;
   }
 
+  // Mobile Safari often blocks popups if window.open happens after an await.
+  // Workaround: open a blank tab synchronously, then navigate it.
   async function sendReport(){
-    const j = await load();
+    const popup = window.open('about:blank', '_blank');
+
+    let j;
+    try {
+      j = await load();
+    } catch (e) {
+      const msg = 'Failed to load /api/status. Is homelab-home running?';
+      if (popup) popup.document.body.textContent = msg;
+      else alert(msg);
+      return;
+    }
+
     const msg = summarize(j);
     const username = j?.meta?.telegramUsername || 'danmaps_clawd_bot';
     const url = makeTelegramLink(username, msg);
-    window.open(url, '_blank', 'noreferrer');
+
+    if (popup) {
+      try { popup.location.href = url; } catch { /* ignore */ }
+    } else {
+      // Fallback: navigate current tab
+      window.location.href = url;
+    }
   }
 
   els.btnRefresh.addEventListener('click', load);
