@@ -6,6 +6,9 @@ const app = express();
 const PORT = Number(process.env.PORT || 3499);
 
 const SERVICES = [
+  // yes, this dashboard should show up in itself (handy for mobile bookmarks)
+  { key: 'homelabhome', name: 'HomeLab Home', port: PORT, path: '/' },
+
   { key: 'camreview', name: 'CamReview', port: 3000, path: '/browse' },
   { key: 'schoolscout', name: 'SchoolScout', port: 3434, path: '/' },
   { key: 'openclaw', name: 'OpenClaw Dashboard', port: 18789, path: '/' },
