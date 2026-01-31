@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home Lab</title>
+  <style>
+    :root{
+      --bg:#0b0f14; --card:#101826; --text:#e9eef6; --muted:#a9b4c1;
+      --border:#1f2a3a; --good:#34d399; --bad:#fb7185; --warn:#fbbf24;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+    body{ margin:0; background:var(--bg); color:var(--text); }
+    header{ padding:16px 16px 8px; max-width:980px; margin:0 auto; }
+    h1{ margin:0; font-size:18px; }
+    .sub{ color:var(--muted); font-size:13px; margin-top:6px; }
+    main{ padding:12px 16px 48px; max-width:980px; margin:0 auto; }
+    .grid{ display:grid; grid-template-columns: 1fr; gap:10px; }
+    @media(min-width: 820px){ .grid{ grid-template-columns: 1fr 1fr; } }
+    .card{ border:1px solid var(--border); background:var(--card); border-radius:14px; padding:12px; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:baseline; }
+    .pill{ padding:2px 8px; border-radius:999px; border:1px solid var(--border); font-size:12px; color:var(--muted); }
+    .pill.good{ color: var(--good); border-color: rgba(52,211,153,0.35); }
+    .pill.bad{ color: var(--bad); border-color: rgba(251,113,133,0.35); }
+    a{ color:#7dd3fc; text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+    button{ background:transparent; color:var(--text); border:1px solid var(--border); padding:10px 12px; border-radius:10px; }
+    .k{ color:var(--muted); font-size:12px; }
+    .svc{ border-top:1px solid var(--border); margin-top:10px; padding-top:10px; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Home Lab</h1>
+  <div class="sub">A tiny local dashboard that shows service status + handy links.</div>
+</header>
+<main>
+  <div class="row" style="margin-bottom:10px;">
+    <button id="btnRefresh">Refresh</button>
+    <span class="pill" id="updated">…</span>
+  </div>
+
+  <div class="grid" id="cards"></div>
+
+  <div class="card" style="margin-top:10px;">
+    <div class="k">Notes</div>
+    <ul style="margin:8px 0 0; color:var(--muted);">
+      <li>If something says DOWN but you expect it UP, the service may not be running or a firewall may be blocking that port.</li>
+      <li>This does not authenticate or expose anything by itself; it only probes ports and prints links.</li>
+    </ul>
+  </div>
+</main>
+
+<script>
+  const els = {
+    cards: document.getElementById('cards'),
+    btnRefresh: document.getElementById('btnRefresh'),
+    updated: document.getElementById('updated'),
+  };
+
+  function pill(ok){
+    const cls = ok ? 'good' : 'bad';
+    const label = ok ? 'UP' : 'DOWN';
+    return `<span class="pill ${cls}">${label}</span>`;
+  }
+
+  function makeUrl(host, port, path){
+    const p = path || '/';
+    return `http://${host}:${port}${p}`;
+  }
+
+  function cardForHost(hostLabel, host, data){
+    const services = data.services;
+    const status = data.results;
+    const key = hostLabel.toLowerCase();
+
+    const k = hostLabel === 'Localhost' ? 'localhost' : (hostLabel === 'LAN' ? 'lan' : 'tailscale');
+    const s = status[k] || {};
+
+    let html = `
+      <div class="card">
+        <div class="row">
+          <div style="flex:1;">
+            <div class="k">${hostLabel}</div>
+            <div class="mono">${host}</div>
+          </div>
+        </div>
+        <div class="svc">
+    `;
+
+    for(const svc of services){
+      const ok = !!(s[svc.key] && s[svc.key].ok);
+      const url = makeUrl(host, svc.port, svc.path);
+      html += `
+        <div class="row" style="margin:6px 0;">
+          <div style="flex:1; min-width:220px;">${svc.name} <span class="k">:${svc.port}</span></div>
+          ${pill(ok)}
+          <a href="${url}" target="_blank" rel="noreferrer">open</a>
+        </div>
+      `;
+    }
+
+    html += `</div></div>`;
+    return html;
+  }
+
+  async function load(){
+    const r = await fetch('/api/status');
+    const j = await r.json();
+    els.updated.textContent = `updated ${new Date(j.updatedAt).toLocaleString()}`;
+
+    const cards = [];
+    if(j.ips.tailscale) cards.push(cardForHost('Tailscale', j.ips.tailscale, j));
+    if(j.ips.lan) cards.push(cardForHost('LAN', j.ips.lan, j));
+    cards.push(cardForHost('Localhost', '127.0.0.1', j));
+
+    els.cards.innerHTML = cards.join('');
+  }
+
+  els.btnRefresh.addEventListener('click', load);
+  load();
+</script>
+</body>
+</html>
