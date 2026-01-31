@@ -6,7 +6,8 @@
   "description": "Local homelab homepage dashboard (LAN/Tailscale) with service/port status.",
   "scripts": {
     "dev": "node server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "serve": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2"
