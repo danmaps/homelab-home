@@ -11,15 +11,7 @@ It:
 
 ```bash
 npm install
-npm run dev
-```
-
-### Run "for real" (Windows, detached)
-
-This keeps the process running even if the terminal (or OpenClaw exec session) ends:
-
-```powershell
-Start-Process -FilePath cmd.exe -WorkingDirectory "$PWD" -ArgumentList '/c','npm start' -WindowStyle Hidden
+npm  start
 ```
 
 Default URL:
