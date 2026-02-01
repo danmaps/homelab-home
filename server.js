@@ -19,13 +19,25 @@ function loadConfig(){
 
 const CONFIG = loadConfig();
 
-const SERVICES = [
-  // yes, this dashboard should show up in itself (handy for mobile bookmarks)
-  { key: 'homelabhome', name: 'HomeLab Home', port: PORT, path: '/' },
+function normalizeServices(services){
+  const out = [];
+  for(const s of (services || [])){
+    if(!s || !s.key || !s.name) continue;
+    const port = (s.port === 'self' || s.port === 'PORT') ? PORT : Number(s.port);
+    if(!Number.isFinite(port) || port <= 0) continue;
+    out.push({
+      key: String(s.key),
+      name: String(s.name),
+      port,
+      path: String(s.path || '/'),
+      repoUrl: s.repoUrl ? String(s.repoUrl) : '',
+    });
+  }
+  return out;
+}
 
-  { key: 'camreview', name: 'CamReview', port: 3000, path: '/browse' },
-  { key: 'schoolscout', name: 'SchoolScout', port: 3434, path: '/' },
-];
+const SERVICES = normalizeServices(CONFIG.services);
+
 
 function probePort(host, port, timeoutMs = 500) {
   return new Promise((resolve) => {

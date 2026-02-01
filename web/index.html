@@ -84,11 +84,21 @@
     for(const svc of services){
       const ok = !!(s[svc.key] && s[svc.key].ok);
       const url = makeUrl(host, svc.port, svc.path);
+      const repo = svc.repoUrl || '';
+      const embedId = `embed-${k}-${svc.key}`;
+
       html += `
-        <div class="row" style="margin:6px 0;">
-          <div style="flex:1; min-width:220px;">${svc.name} <span class="k">:${svc.port}</span></div>
+        <div class="row" style="margin:6px 0; align-items:center;">
+          <div style="flex:1; min-width:220px;">
+            <a href="${url}" target="_blank" rel="noreferrer">${svc.name}</a>
+            <span class="k">:${svc.port}</span>
+          </div>
           ${pill(ok)}
-          <a href="${url}" target="_blank" rel="noreferrer">open</a>
+          ${repo ? `<a class="k" href="${repo}" target="_blank" rel="noreferrer">repo</a>` : ''}
+          <button class="k" data-embed="${embedId}" style="padding:6px 10px;">view</button>
+        </div>
+        <div id="${embedId}" style="display:none; margin:8px 0 14px;">
+          <iframe src="${url}" style="width:100%; height:70vh; border:1px solid var(--border); border-radius:12px; background: #000;"></iframe>
         </div>
       `;
     }
@@ -177,9 +187,22 @@
     }
   }
 
-  els.btnRefresh.addEventListener('click', load);
+  function wireEmbeds(){
+    document.querySelectorAll('button[data-embed]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = btn.getAttribute('data-embed');
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
+      });
+    });
+  }
+
+  els.btnRefresh.addEventListener('click', async () => { await load(); wireEmbeds(); });
   els.btnReport.addEventListener('click', sendReport);
-  load();
+  load().then(wireEmbeds);
 </script>
 </body>
 </html>

@@ -1,4 +1,13 @@
 {
   "repoUrl": "https://github.com/danmaps/homelab-home",
-  "telegramUsername": "danmaps_clawd_bot"
+  "telegramUsername": "danmaps_clawd_bot",
+  "services": [
+    {
+      "key": "homelabhome",
+      "name": "HomeLab Home",
+      "port": "self",
+      "path": "/",
+      "repoUrl": "https://github.com/danmaps/homelab-home"
+    }
+  ]
 }
