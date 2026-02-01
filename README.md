@@ -11,8 +11,8 @@ It:
 
 ```bash
 npm install
-npm  start
-```
+npm start
+``` 
 
 Default URL:
 - http://localhost:3499
