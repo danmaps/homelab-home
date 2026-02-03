@@ -36,7 +36,7 @@
   <div class="row" style="margin-bottom:10px;">
     <button id="btnRefresh">Refresh</button>
     <button id="btnReport">Send report</button>
-    <a class="pill" href="/moltbook.html">Moltbook summaries</a>
+    <a class="pill" id="moltbookLink" href="#">Moltbook summaries</a>
     <span class="pill" id="updated">…</span>
   </div>
 
@@ -50,6 +50,7 @@
     btnRefresh: document.getElementById('btnRefresh'),
     btnReport: document.getElementById('btnReport'),
     updated: document.getElementById('updated'),
+    moltbookLink: document.getElementById('moltbookLink'),
   };
 
   function pill(ok){
@@ -151,6 +152,20 @@
     const r = await fetch('/api/status');
     const j = await r.json();
     els.updated.textContent = `updated ${new Date(j.updatedAt).toLocaleString()}`;
+
+    // Link to Moltbook summary app if present in services list
+    try {
+      const svc = (j.services || []).find(s => (s.key || '').toLowerCase() === 'moltsummaries');
+      if (svc) {
+        const host = j.ips?.tailscale || j.ips?.lan || '127.0.0.1';
+        const url = makeUrl(host, svc.port, svc.path);
+        els.moltbookLink.href = url;
+        els.moltbookLink.target = '_blank';
+        els.moltbookLink.rel = 'noreferrer';
+      } else {
+        els.moltbookLink.href = '#';
+      }
+    } catch {}
 
     const cards = [];
     if(j.ips.tailscale) cards.push(cardForHost('Tailscale', j.ips.tailscale, j));
