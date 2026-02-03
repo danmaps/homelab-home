@@ -1,7 +1,8 @@
 import express from 'express';
 import net from 'node:net';
 import { execFile } from 'node:child_process';
-import { readFileSync, existsSync } from 'node:fs';
+import path from 'node:path';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 
 const app = express();
 const PORT = Number(process.env.PORT || 3499);
@@ -13,11 +14,15 @@ function loadConfig(){
     const raw = readFileSync(path, 'utf-8');
     return JSON.parse(raw);
   } catch {
-    return { repoUrl: '', telegramUsername: 'danmaps_clawd_bot' };
+    return { repoUrl: '', telegramUsername: 'danmaps_clawd_bot', moltbookSummaries: { dir: '../moltbook-summaries', routeBase: '/moltbook' } };
   }
 }
 
 const CONFIG = loadConfig();
+const MOLTS = {
+  dir: String(CONFIG?.moltbookSummaries?.dir || '../moltbook-summaries'),
+  routeBase: String(CONFIG?.moltbookSummaries?.routeBase || '/moltbook'),
+};
 
 function normalizeServices(services){
   const out = [];
@@ -92,6 +97,44 @@ async function getIps() {
   return { tailscale: ts, lan };
 }
 
+function safeListSummaries(){
+  try {
+    const base = path.resolve(process.cwd(), MOLTS.dir);
+    const files = readdirSync(base, { withFileTypes: true })
+      .filter((d) => d.isFile())
+      .map((d) => d.name)
+      .filter((n) => /^\d{4}-\d{2}-\d{2}\.md$/i.test(n))
+      .sort();
+    return { base, files };
+  } catch {
+    return { base: '', files: [] };
+  }
+}
+
+app.get('/api/moltbook/summaries', (_req, res) => {
+  const { base, files } = safeListSummaries();
+  const items = files.map((f) => ({ date: f.replace(/\.md$/i, ''), file: f }));
+  res.json({ success: true, base, items });
+});
+
+app.get('/api/moltbook/summaries/:date', (req, res) => {
+  const date = String(req.params.date || '').trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){
+    return res.status(400).json({ success: false, error: 'invalid date' });
+  }
+  const { base, files } = safeListSummaries();
+  const file = `${date}.md`;
+  if(!files.includes(file)){
+    return res.status(404).json({ success: false, error: 'not found' });
+  }
+  try {
+    const content = readFileSync(path.join(base, file), 'utf-8');
+    res.json({ success: true, date, content });
+  } catch {
+    res.status(500).json({ success: false, error: 'read failed' });
+  }
+});
+
 app.get('/api/status', async (_req, res) => {
   const ips = await getIps();
 
@@ -119,6 +162,7 @@ app.get('/api/status', async (_req, res) => {
     meta: {
       repoUrl: CONFIG.repoUrl || '',
       telegramUsername: CONFIG.telegramUsername || 'danmaps_clawd_bot',
+      moltbookSummaries: MOLTS,
     },
   });
 });

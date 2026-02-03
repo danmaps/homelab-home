@@ -1,6 +1,10 @@
 {
   "repoUrl": "https://github.com/<you>/homelab-home",
   "telegramUsername": "danmaps_clawd_bot",
+  "moltbookSummaries": {
+    "dir": "../moltbook-summaries",
+    "routeBase": "/moltbook"
+  },
   "services": [
     {
       "key": "homelabhome",
