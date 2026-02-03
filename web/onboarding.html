@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Homelab Home: onboarding + deploy notes</title>
+  <style>
+    :root{
+      --bg:#0b0f14; --card:#101826; --text:#e9eef6; --muted:#a9b4c1;
+      --border:#1f2a3a; --good:#34d399; --bad:#fb7185; --warn:#fbbf24;
+      --link:#7dd3fc;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+    body{ margin:0; background:var(--bg); color:var(--text); }
+    header{ padding:16px; max-width:980px; margin:0 auto; }
+    main{ padding:0 16px 48px; max-width:980px; margin:0 auto; }
+    h1{ margin:0; font-size:18px; }
+    .sub{ color:var(--muted); font-size:13px; margin-top:6px; }
+    a{ color:var(--link); text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+    .card{ border:1px solid var(--border); background:var(--card); border-radius:14px; padding:14px; margin-top:12px; }
+    .k{ color:var(--muted); font-size:12px; }
+    pre, code{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    pre{ background: rgba(0,0,0,0.25); border:1px solid var(--border); border-radius:12px; padding:12px; overflow:auto; }
+    ul{ margin: 8px 0 0 18px; }
+    li{ margin: 6px 0; }
+    .pill{ display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid var(--border); font-size:12px; color:var(--muted); }
+  </style>
+</head>
+<body>
+<header>
+  <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+    <div>
+      <h1>Homelab Home: onboarding + deploy notes</h1>
+      <div class="sub">A generic playbook for adding new services to this dashboard (Windows-first, Linux included).</div>
+    </div>
+    <div class="sub"><a href="/">Back to dashboard</a></div>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="k">What this page is</div>
+    <p>
+      This is a repeatable checklist for adding a new app/service to the Homelab Home dashboard.
+      Treat it like an “agent skill”: small, explicit, and easy to customize later.
+    </p>
+    <p class="k">Principles:</p>
+    <ul>
+      <li><span class="pill">boring</span> no magic; prefer obvious files and commands</li>
+      <li><span class="pill">restartable</span> use a supervisor so the service comes back after reboot</li>
+      <li><span class="pill">discoverable</span> the dashboard should make it obvious what exists and where</li>
+      <li><span class="pill">local-first</span> don’t expose to the public internet by accident</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 8px; font-size:16px;">1) Create the service (the new app)</h2>
+    <div class="k">Minimal expectations</div>
+    <ul>
+      <li>Runs on a single TCP port (HTTP).</li>
+      <li>Has a predictable health endpoint (recommended: <code>/api/health</code>).</li>
+      <li>Has a simple run script for humans (<code>run-prod.cmd</code> on Windows, or a one-liner on Linux).</li>
+    </ul>
+
+    <div class="k" style="margin-top:10px;">Recommended env vars</div>
+    <pre>PORT=1234
+HOST=0.0.0.0</pre>
+
+    <div class="k">Health endpoint (recommended)</div>
+    <pre>GET /api/health  → { ok: true, ... }</pre>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 8px; font-size:16px;">2) Pick a port</h2>
+    <ul>
+      <li>Choose a port that won’t collide with existing services.</li>
+      <li>Prefer a stable port per service. Ports are part of the UI contract.</li>
+      <li>If the app binds to <code>127.0.0.1</code> only, remote devices won’t be able to reach it. For LAN access, bind to <code>0.0.0.0</code>.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 8px; font-size:16px;">3) Run it under a supervisor (so it survives reboots)</h2>
+
+    <h3 style="margin:10px 0 6px; font-size:14px;">Windows (recommended approach)</h3>
+    <div class="k">Option A: Scheduled Task (simple)</div>
+    <ul>
+      <li>Create a Scheduled Task that runs at logon (or at startup) and restarts on failure.</li>
+      <li>Command should be a stable script (ex: <code>run-prod.cmd</code>) so you can edit behavior without rewriting the task.</li>
+    </ul>
+
+    <div class="k">Option B: NSSM (service wrapper)</div>
+    <ul>
+      <li>If you want “real service” semantics on Windows, use NSSM to run <code>node server.js</code> (or your compiled binary) as a service.</li>
+      <li>Set env vars in NSSM (PORT/HOST/etc).</li>
+    </ul>
+
+    <h3 style="margin:12px 0 6px; font-size:14px;">Linux (in case you migrate later)</h3>
+    <div class="k">Option A: systemd (preferred)</div>
+    <pre>[Unit]
+Description=My Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/opt/my-service
+Environment=PORT=1234
+Environment=HOST=0.0.0.0
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</pre>
+    <div class="k">Enable:</div>
+    <pre>sudo systemctl daemon-reload
+sudo systemctl enable --now my-service</pre>
+
+    <div class="k">Option B: pm2</div>
+    <pre>pm2 start server.js --name my-service
+pm2 save
+pm2 startup</pre>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 8px; font-size:16px;">4) Add it to the Homelab Home dashboard</h2>
+    <p>
+      The dashboard reads <code>config.local.json</code> (if present) or falls back to <code>config.json</code>.
+      Add a new service object.
+    </p>
+
+    <div class="k">Example service entry</div>
+    <pre>{
+  "key": "myservice",
+  "name": "My Service",
+  "port": 1234,
+  "path": "/",
+  "repoUrl": "https://github.com/you/myservice"
+}</pre>
+
+    <div class="k">What fields mean</div>
+    <ul>
+      <li><code>key</code>: stable identifier (used by the UI and status probe)</li>
+      <li><code>name</code>: display name</li>
+      <li><code>port</code>: number (or <code>"self"</code> for the dashboard itself)</li>
+      <li><code>path</code>: where the app lives (usually <code>/</code>)</li>
+      <li><code>repoUrl</code>: optional; shows a “repo” link in the UI</li>
+    </ul>
+
+    <div class="k">Then restart homelab-home</div>
+    <pre># Windows
+run-prod.cmd
+
+# Linux
+npm run start</pre>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 8px; font-size:16px;">5) Verify (fast)</h2>
+    <ul>
+      <li>Open the dashboard and hit Refresh.</li>
+      <li>Look for the service under Tailscale/LAN/Localhost and check UP/DOWN.</li>
+      <li>Hit the service URL directly (click the service name).</li>
+      <li>Optional: click “view” to embed it (handy on mobile).</li>
+    </ul>
+
+    <div class="k">Common failure modes</div>
+    <ul>
+      <li><b>DOWN everywhere</b>: service isn’t running, wrong port, or firewall.</li>
+      <li><b>UP on localhost only</b>: service bound to 127.0.0.1; change to 0.0.0.0.</li>
+      <li><b>UP on LAN but not Tailscale</b>: tailscale IP changed or service blocked to that interface.</li>
+      <li><b>Dashboard shows stale config</b>: restart homelab-home (it loads config at boot).</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 8px; font-size:16px;">6) Adding future customization</h2>
+    <ul>
+      <li>New static pages live in <code>/web</code> and are served automatically.</li>
+      <li>If you add new API endpoints, keep them under <code>/api/</code>.</li>
+      <li>Prefer “one file” pages: a single <code>.html</code> with inline JS/CSS is fine for homelab use.</li>
+      <li>Keep secrets out of repos and out of the dashboard. Use <code>config.local.json</code> and environment variables.</li>
+    </ul>
+  </div>
+
+</main>
+</body>
+</html>
