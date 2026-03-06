@@ -8,4 +8,4 @@ cd "$REPO_DIR"
 git pull --ff-only
 
 # Build and run container (localhost only)
-docker compose up -d --build
+docker-compose up -d --build
