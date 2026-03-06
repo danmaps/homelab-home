@@ -19,7 +19,14 @@ Default URL:
 
 ## Configure services
 
-Edit `SERVICES` in `server.js`.
+Create `config.local.json` (recommended) or edit `config.json`.
+
+Load order:
+- `config.local.json` (if present and valid JSON file)
+- `config.json`
+- built-in defaults (empty services list)
+
+Use [`config.example.json`](/home/openclaw/.openclaw/workspace/homelab-home/config.example.json) as the template.
 
 ## Notes
 

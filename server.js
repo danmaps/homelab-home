@@ -1,24 +1,52 @@
 import express from 'express';
 import net from 'node:net';
 import { execFile } from 'node:child_process';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, statSync } from 'node:fs';
 
 const app = express();
 const PORT = Number(process.env.PORT || 3499);
 const HOST = process.env.HOST || '127.0.0.1';
+const DEFAULT_CONFIG = {
+  repoUrl: '',
+  telegramUsername: 'danmaps_clawd_bot',
+  services: [],
+};
 
-function loadConfig(){
-  const localPath = 'config.local.json';
-  const path = existsSync(localPath) ? localPath : 'config.json';
+function readConfigFile(path) {
+  if (!existsSync(path)) return null;
   try {
+    const stat = statSync(path);
+    if (!stat.isFile()) {
+      console.warn(`Ignoring ${path}: path exists but is not a file`);
+      return null;
+    }
     const raw = readFileSync(path, 'utf-8');
     return JSON.parse(raw);
-  } catch {
-    return { repoUrl: '', telegramUsername: 'danmaps_clawd_bot' };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`Ignoring ${path}: could not read/parse JSON (${message})`);
+    return null;
   }
 }
 
-const CONFIG = loadConfig();
+function loadConfig() {
+  const candidates = ['config.local.json', 'config.json'];
+  for (const path of candidates) {
+    const cfg = readConfigFile(path);
+    if (cfg && typeof cfg === 'object') {
+      return {
+        source: path,
+        config: { ...DEFAULT_CONFIG, ...cfg },
+      };
+    }
+  }
+  return {
+    source: 'defaults',
+    config: { ...DEFAULT_CONFIG },
+  };
+}
+
+const { source: CONFIG_SOURCE, config: CONFIG } = loadConfig();
 
 function normalizeServices(services){
   const out = [];
@@ -37,7 +65,7 @@ function normalizeServices(services){
   return out;
 }
 
-const SERVICES = normalizeServices(CONFIG.services);
+const SERVICES = normalizeServices(Array.isArray(CONFIG.services) ? CONFIG.services : []);
 
 
 function probePort(host, port, timeoutMs = 500) {
@@ -114,8 +142,6 @@ app.get('/api/status', async (_req, res) => {
 
   const hosts = [
     { key: 'tailscale', label: 'Tailscale', host: ips.tailscale },
-    { key: 'lan', label: 'LAN', host: ips.lan },
-    { key: 'localhost', label: 'Localhost', host: '127.0.0.1' },
   ].filter((h) => h.host);
 
   const results = {};
@@ -144,4 +170,5 @@ app.use(express.static('web'));
 
 app.listen(PORT, HOST, () => {
   console.log(`homelab-home running on http://${HOST}:${PORT}`);
+  console.log(`config source: ${CONFIG_SOURCE} (${SERVICES.length} service${SERVICES.length === 1 ? '' : 's'})`);
 });
