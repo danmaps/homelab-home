@@ -2,4 +2,6 @@ node_modules
 config.local.json
 .env
 .DS_Store
+config.json
+config.local.json
 *.log
