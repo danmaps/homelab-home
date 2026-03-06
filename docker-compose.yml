@@ -4,7 +4,7 @@ services:
     build: .
     container_name: homelab-home
     ports:
-      - "127.0.0.1:3499:3499"
+      - "100.87.16.33:3499:3499"
     restart: unless-stopped
     environment:
       - PORT=3499
