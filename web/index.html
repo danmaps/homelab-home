@@ -72,22 +72,20 @@
     return `http://${host}:${port}${p}`;
   }
 
-  function cardForHost(hostLabel, host, data){
+  function cardForTailscale(host, data){
     const services = data.services;
     const status = data.results;
-
-    const k = hostLabel === 'Localhost' ? 'localhost' : (hostLabel === 'LAN' ? 'lan' : 'tailscale');
+    const k = 'tailscale';
     const s = status[k] || {};
 
-    const openByDefault = (hostLabel === 'Tailscale');
-    let html = `<details class="card" ${openByDefault ? 'open' : ''}>`;
+    let html = `<div class="card">`;
     html += `
-      <summary class="row" style="cursor:pointer; list-style:none;">
+      <div class="row" style="margin-bottom:6px;">
         <div style="flex:1;">
-          <div class="k">${hostLabel}</div>
+          <div class="k">Tailscale</div>
           <div class="mono">${host}</div>
         </div>
-      </summary>
+      </div>
       <div class="svc">
     `;
 
@@ -113,7 +111,7 @@
       `;
     }
 
-    html += `</div></details>`;
+    html += `</div></div>`;
     return html;
   }
 
@@ -130,21 +128,13 @@
     lines.push(`Updated: ${j.updatedAt}`);
     lines.push('');
 
-    const order = [
-      ['tailscale', 'Tailscale', j?.ips?.tailscale],
-      ['lan', 'LAN', j?.ips?.lan],
-      ['localhost', 'Localhost', '127.0.0.1'],
-    ];
-
-    for(const [k, label, host] of order){
-      if(k !== 'localhost' && !host) continue;
-      lines.push(`${label}: ${host || ''}`);
-      for(const svc of (j.services || [])){
-        const ok = !!(j?.results?.[k]?.[svc.key]?.ok);
-        lines.push(`- ${svc.name} :${svc.port} ${ok ? 'UP' : 'DOWN'}`);
-      }
-      lines.push('');
+    const host = j?.ips?.tailscale || '100.87.16.33';
+    lines.push(`Tailscale: ${host}`);
+    for(const svc of (j.services || [])){
+      const ok = !!(j?.results?.tailscale?.[svc.key]?.ok);
+      lines.push(`- ${svc.name} :${svc.port} ${ok ? 'UP' : 'DOWN'}`);
     }
+    lines.push('');
 
     lines.push('Request: please help me fix what looks off (DOWN services, firewall/bind, etc).');
     return lines.join('\n');
@@ -161,11 +151,8 @@
     const j = await r.json();
     els.updated.textContent = `updated ${new Date(j.updatedAt).toLocaleString()}`;
 
-    const cards = [];
-    if(j.ips.tailscale) cards.push(cardForHost('Tailscale', j.ips.tailscale, j));
-    if(j.ips.lan) cards.push(cardForHost('LAN', j.ips.lan, j));
-    cards.push(cardForHost('Localhost', '127.0.0.1', j));
-
+    const host = j?.ips?.tailscale || '100.87.16.33';
+    const cards = [cardForTailscale(host, j)];
     els.cards.innerHTML = cards.join('');
     return j;
   }
