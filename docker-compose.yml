@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  homelab-home:
+    build: .
+    container_name: homelab-home
+    ports:
+      - "127.0.0.1:3499:3499"
+    restart: unless-stopped
+    environment:
+      - PORT=3499
+      - HOST=0.0.0.0
+    volumes:
+      - ./config.json:/app/config.json:ro
+      - ./config.local.json:/app/config.local.json:ro

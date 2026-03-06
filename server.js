@@ -5,6 +5,7 @@ import { readFileSync, existsSync } from 'node:fs';
 
 const app = express();
 const PORT = Number(process.env.PORT || 3499);
+const HOST = process.env.HOST || '127.0.0.1';
 
 function loadConfig(){
   const localPath = 'config.local.json';
@@ -71,21 +72,37 @@ function run(cmd, args) {
 
 async function getIps() {
   const ts = (await run('tailscale', ['ip', '-4'])).split(/\r?\n/).filter(Boolean)[0] || '';
-  // Best-effort LAN ip from ipconfig (prefer Wi-Fi)
-  const ipconfig = await run('ipconfig', []);
+
+  // Best-effort LAN IP detection (Windows + Linux)
   let lan = '';
-  const blocks = ipconfig.split(/\r?\n\r?\n/);
-  for (const b of blocks) {
-    if (!b.includes('Wi-Fi') || !b.includes('IPv4 Address')) continue;
-    const m = b.match(/IPv4 Address[.\s]*:\s*([0-9.]+)/);
-    if (m && (m[1].startsWith('192.168.') || m[1].startsWith('10.'))) {
-      lan = m[1];
-      break;
+
+  // Windows: ipconfig
+  const ipconfig = await run('ipconfig', []);
+  if (ipconfig) {
+    const blocks = ipconfig.split(/\r?\n\r?\n/);
+    for (const b of blocks) {
+      if (!b.includes('Wi-Fi') || !b.includes('IPv4 Address')) continue;
+      const m = b.match(/IPv4 Address[.\s]*:\s*([0-9.]+)/);
+      if (m && (m[1].startsWith('192.168.') || m[1].startsWith('10.'))) {
+        lan = m[1];
+        break;
+      }
+    }
+    if (!lan) {
+      const all = Array.from(ipconfig.matchAll(/IPv4 Address[.\s]*:\s*([0-9.]+)/g)).map((m) => m[1]);
+      lan = all.find((ip) => ip.startsWith('192.168.') || ip.startsWith('10.')) || '';
     }
   }
+
+  // Linux/macOS: hostname -I / ip -4 addr
   if (!lan) {
-    // fallback: first LAN-like IPv4 from any adapter (ignore tailscale 100.x and virtual 172.x)
-    const all = Array.from(ipconfig.matchAll(/IPv4 Address[.\s]*:\s*([0-9.]+)/g)).map((m) => m[1]);
+    const hostIps = (await run('hostname', ['-I'])) || '';
+    const all = hostIps.split(/\s+/).filter(Boolean);
+    lan = all.find((ip) => ip.startsWith('192.168.') || ip.startsWith('10.')) || '';
+  }
+  if (!lan) {
+    const ipAddr = await run('ip', ['-4', 'addr']);
+    const all = Array.from(ipAddr.matchAll(/inet\s+([0-9.]+)\//g)).map((m) => m[1]);
     lan = all.find((ip) => ip.startsWith('192.168.') || ip.startsWith('10.')) || '';
   }
 
@@ -125,6 +142,6 @@ app.get('/api/status', async (_req, res) => {
 
 app.use(express.static('web'));
 
-app.listen(PORT, () => {
-  console.log(`homelab-home running on http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`homelab-home running on http://${HOST}:${PORT}`);
 });
