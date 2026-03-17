@@ -8,5 +8,7 @@ services:
     environment:
       - PORT=3499
       - HOST=0.0.0.0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

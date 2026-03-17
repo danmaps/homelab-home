@@ -213,9 +213,10 @@ app.get('/api/status', async (_req, res) => {
       results[s.key] = { ok: false, reason: 'no-published-port' };
       continue;
     }
-    const host = s.hostIp || tailscaleHost;
-    const ok = await probePort(host, Number(s.port));
-    results[s.key] = { ok, host, port: Number(s.port) };
+    const displayHost = s.hostIp || tailscaleHost;
+    const probeHost = (!displayHost || displayHost === '0.0.0.0') ? 'host.docker.internal' : displayHost;
+    const ok = await probePort(probeHost, Number(s.port));
+    results[s.key] = { ok, host: displayHost, port: Number(s.port) };
   }
 
   res.json({
