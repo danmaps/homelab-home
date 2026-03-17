@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title></title>
+  <title>homelab-home</title>
   <style>
     :root{
       --bg:#0b0f14; --card:#101826; --text:#e9eef6; --muted:#a9b4c1;
@@ -11,23 +11,26 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
     body{ margin:0; background:var(--bg); color:var(--text); }
-    header{ padding:16px 16px 8px; max-width:980px; margin:0 auto; }
+    header{ padding:16px 16px 8px; max-width:1180px; margin:0 auto; }
     h1{ margin:0; font-size:18px; }
     .sub{ color:var(--muted); font-size:13px; margin-top:6px; }
-    main{ padding:12px 16px 48px; max-width:980px; margin:0 auto; }
+    main{ padding:12px 16px 48px; max-width:1180px; margin:0 auto; }
     .grid{ display:grid; grid-template-columns: 1fr; gap:10px; }
-    @media(min-width: 820px){ .grid{ grid-template-columns: 1fr 1fr; } }
+    @media(min-width: 920px){ .grid{ grid-template-columns: 1fr 1fr; } }
+    @media(min-width: 1260px){ .grid{ grid-template-columns: 1fr 1fr 1fr; } }
     .card{ border:1px solid var(--border); background:var(--card); border-radius:14px; padding:12px; }
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:baseline; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .pill{ padding:2px 8px; border-radius:999px; border:1px solid var(--border); font-size:12px; color:var(--muted); }
     .pill.good{ color: var(--good); border-color: rgba(52,211,153,0.35); }
     .pill.bad{ color: var(--bad); border-color: rgba(251,113,133,0.35); }
+    .pill.warn{ color: var(--warn); border-color: rgba(251,191,36,0.35); }
     a{ color:#7dd3fc; text-decoration:none; }
     a:hover{ text-decoration:underline; }
     button{ background:transparent; color:var(--text); border:1px solid var(--border); padding:10px 12px; border-radius:10px; }
     .k{ color:var(--muted); font-size:12px; }
-    .svc{ border-top:1px solid var(--border); margin-top:10px; padding-top:10px; }
     .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .svcname{ font-weight:600; }
+    iframe{ width:100%; height:70vh; border:1px solid var(--border); border-radius:12px; background:#000; margin-top:10px; }
   </style>
 </head>
 <body>
@@ -35,10 +38,9 @@
   <div class="row" style="justify-content:space-between; align-items:baseline;">
     <div>
       <h1>homelab-home</h1>
-      <div class="sub">Local service dashboard</div>
+      <div class="sub">Running services on Conductor</div>
     </div>
     <div class="row">
-      <a class="pill" href="https://danmaps.github.io/drafts.html" target="_blank" rel="noreferrer">Blog drafts</a>
       <a class="pill" href="/onboarding.html">Onboarding</a>
     </div>
   </div>
@@ -51,7 +53,6 @@
   </div>
 
   <div class="grid" id="cards"></div>
-
 </main>
 
 <script>
@@ -62,62 +63,45 @@
     updated: document.getElementById('updated'),
   };
 
-  function pill(ok){
-    const cls = ok ? 'good' : 'bad';
-    const label = ok ? 'UP' : 'DOWN';
-    return `<span class="pill ${cls}">${label}</span>`;
-  }
-
-  function makeUrl(host, port, path){
-    const p = path || '/';
-    return `http://${host}:${port}${p}`;
-  }
-
-  function cardForTailscale(host, data){
-    const services = data.services;
-    const status = data.results;
-    const k = 'tailscale';
-    const s = status[k] || {};
-
-    let html = `<div class="card">`;
-    html += `
-      <div class="row" style="margin-bottom:6px;">
-        <div style="flex:1;">
-          <div class="k">Tailscale</div>
-          <div class="mono">${host}</div>
-        </div>
-      </div>
-      <div class="svc">
-    `;
-
-    for(const svc of services){
-      const ok = !!(s[svc.key] && s[svc.key].ok);
-      const url = makeUrl(host, svc.port, svc.path);
-      const repo = svc.repoUrl || '';
-      const embedId = `embed-${k}-${svc.key}`;
-
-      html += `
-        <div class="row" style="margin:6px 0; align-items:center;">
-          <div style="flex:1; min-width:220px;">
-            <a href="${url}" target="_blank" rel="noreferrer">${svc.name}</a>
-            <span class="k">:${svc.port}</span>
-          </div>
-          ${pill(ok)}
-          ${repo ? `<a class="k" href="${repo}" target="_blank" rel="noreferrer">repo</a>` : ''}
-          <button class="k" data-embed="${embedId}" style="padding:6px 10px;">view</button>
-        </div>
-        <div id="${embedId}" style="display:none; margin:8px 0 14px;">
-          <iframe src="${url}" style="width:100%; height:70vh; border:1px solid var(--border); border-radius:12px; background: #000;"></iframe>
-        </div>
-      `;
+  function statusPill(result){
+    if (result?.reason === 'no-published-port') {
+      return `<span class="pill warn">INTERNAL</span>`;
     }
-
-    html += `</div></div>`;
-    return html;
+    const ok = !!result?.ok;
+    return `<span class="pill ${ok ? 'good' : 'bad'}">${ok ? 'UP' : 'DOWN'}</span>`;
   }
 
-  function esc(s){
-    return String(s || '').replace(/[&<>]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  function makeUrl(result, service, fallbackHost){
+    if (!result?.host || !result?.port) return '';
+    return `http://${result.host || fallbackHost}:${result.port}${service.path || '/'}`;
+  }
+
+  function cardForService(service, result, fallbackHost){
+    const url = makeUrl(result, service, fallbackHost);
+    const embedId = `embed-${service.key}`;
+    return `
+      <div class="card">
+        <div class="row" style="justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+          <div>
+            <div class="svcname">${service.name}</div>
+            <div class="k mono">${service.containerName || service.key}</div>
+          </div>
+          ${statusPill(result)}
+        </div>
+        <div class="k">source: ${service.source || 'unknown'}</div>
+        <div class="row" style="margin-top:10px; align-items:center;">
+          <span class="pill">${result?.host || 'n/a'}</span>
+          <span class="pill">${service.port || 'no port'}</span>
+          ${service.containerPort ? `<span class="pill">container ${service.containerPort}</span>` : ''}
+        </div>
+        <div class="row" style="margin-top:10px; align-items:center;">
+          ${url ? `<a href="${url}" target="_blank" rel="noreferrer">open</a>` : `<span class="k">no public URL</span>`}
+          ${service.repoUrl ? `<a class="k" href="${service.repoUrl}" target="_blank" rel="noreferrer">repo</a>` : ''}
+          ${url ? `<button class="k" data-embed="${embedId}" style="padding:6px 10px;">view</button>` : ''}
+        </div>
+        ${url ? `<div id="${embedId}" style="display:none;"><iframe src="${url}"></iframe></div>` : ''}
+      </div>
+    `;
   }
 
   function summarize(j){
@@ -128,16 +112,13 @@
     if(j?.meta?.repoUrl) lines.push(`Repo: ${j.meta.repoUrl}`);
     lines.push(`Updated: ${j.updatedAt}`);
     lines.push('');
-
-    const host = j?.ips?.tailscale || '100.87.16.33';
-    lines.push(`Tailscale: ${host}`);
     for(const svc of (j.services || [])){
-      const ok = !!(j?.results?.tailscale?.[svc.key]?.ok);
-      lines.push(`- ${svc.name} :${svc.port} ${ok ? 'UP' : 'DOWN'}`);
+      const result = j.results?.[svc.key] || {};
+      const state = result.reason === 'no-published-port' ? 'INTERNAL' : (result.ok ? 'UP' : 'DOWN');
+      lines.push(`- ${svc.name} (${svc.containerName || svc.key}) ${state} ${result.host ? `${result.host}:${result.port}` : ''}`.trim());
     }
     lines.push('');
-
-    lines.push('Request: please help me fix what looks off (DOWN services, firewall/bind, etc).');
+    lines.push('Request: please help me fix what looks off.');
     return lines.join('\n');
   }
 
@@ -151,18 +132,13 @@
     const r = await fetch('/api/status');
     const j = await r.json();
     els.updated.textContent = `updated ${new Date(j.updatedAt).toLocaleString()}`;
-
-    const host = j?.ips?.tailscale || '100.87.16.33';
-    const cards = [cardForTailscale(host, j)];
-    els.cards.innerHTML = cards.join('');
+    const fallbackHost = j?.ips?.tailscale || '100.87.16.33';
+    els.cards.innerHTML = (j.services || []).map((svc) => cardForService(svc, j.results?.[svc.key], fallbackHost)).join('');
     return j;
   }
 
-  // Mobile Safari often blocks popups if window.open happens after an await.
-  // Workaround: open a blank tab synchronously, then navigate it.
   async function sendReport(){
     const popup = window.open('about:blank', '_blank');
-
     let j;
     try {
       j = await load();
@@ -178,9 +154,8 @@
     const url = makeTelegramLink(username, msg);
 
     if (popup) {
-      try { popup.location.href = url; } catch { /* ignore */ }
+      try { popup.location.href = url; } catch {}
     } else {
-      // Fallback: navigate current tab
       window.location.href = url;
     }
   }
@@ -189,7 +164,6 @@
     document.querySelectorAll('button[data-embed]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation();
         const id = btn.getAttribute('data-embed');
         const el = document.getElementById(id);
         if(!el) return;
