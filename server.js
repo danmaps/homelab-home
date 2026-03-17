@@ -191,6 +191,8 @@ function mergeServices(configServices, dockerServices) {
         ...existing,
         ...svc,
         port: existing.port ?? svc.port,
+        host: svc.host || existing.host || '',
+        publicUrl: svc.publicUrl || existing.publicUrl || '',
         source: existing.source === 'docker' ? 'docker+config' : svc.source,
       });
     } else {

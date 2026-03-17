@@ -5,53 +5,236 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>homelab-home</title>
   <style>
-    :root{
-      --bg:#0b0f14; --card:#101826; --text:#e9eef6; --muted:#a9b4c1;
-      --border:#1f2a3a; --good:#34d399; --bad:#fb7185; --warn:#fbbf24; --info:#7dd3fc;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    :root {
+      --bg: #09111b;
+      --bg2: #0e1724;
+      --card: rgba(15, 23, 36, 0.9);
+      --card2: rgba(18, 29, 45, 0.95);
+      --text: #edf4ff;
+      --muted: #98a8bc;
+      --border: rgba(255,255,255,0.08);
+      --accent: #7dd3fc;
+      --accent2: #60a5fa;
+      --good: #34d399;
+      --warn: #fbbf24;
+      --shadow: 0 18px 48px rgba(0,0,0,0.35);
+      --radius: 18px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
-    body{ margin:0; background:var(--bg); color:var(--text); }
-    header{ padding:16px 16px 8px; max-width:1180px; margin:0 auto; }
-    h1{ margin:0; font-size:18px; }
-    .sub{ color:var(--muted); font-size:13px; margin-top:6px; }
-    main{ padding:12px 16px 48px; max-width:1180px; margin:0 auto; }
-    .grid{ display:grid; grid-template-columns: 1fr; gap:10px; }
-    @media(min-width: 920px){ .grid{ grid-template-columns: 1fr 1fr; } }
-    @media(min-width: 1260px){ .grid{ grid-template-columns: 1fr 1fr 1fr; } }
-    .card{ border:1px solid var(--border); background:var(--card); border-radius:14px; padding:12px; }
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .pill{ padding:2px 8px; border-radius:999px; border:1px solid var(--border); font-size:12px; color:var(--muted); }
-    .pill.good{ color: var(--good); border-color: rgba(52,211,153,0.35); }
-    .pill.bad{ color: var(--bad); border-color: rgba(251,113,133,0.35); }
-    .pill.warn{ color: var(--warn); border-color: rgba(251,191,36,0.35); }
-    .pill.info{ color: var(--info); border-color: rgba(125,211,252,0.35); }
-    a{ color:#7dd3fc; text-decoration:none; }
-    a:hover{ text-decoration:underline; }
-    button{ background:transparent; color:var(--text); border:1px solid var(--border); padding:10px 12px; border-radius:10px; }
-    .k{ color:var(--muted); font-size:12px; }
-    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-    .svcname{ font-weight:600; }
-    iframe{ width:100%; height:70vh; border:1px solid var(--border); border-radius:12px; background:#000; margin-top:10px; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,0.14), transparent 26%),
+        radial-gradient(circle at top right, rgba(125,211,252,0.08), transparent 20%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell { max-width: 1360px; margin: 0 auto; padding: 16px 14px 40px; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .panel {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)), var(--card);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .heroMain { padding: 18px 18px 16px; }
+    .heroAside { padding: 16px 18px; display: grid; gap: 10px; }
+    .eyebrow {
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.65rem, 6vw, 3rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+    .sub {
+      color: var(--muted);
+      margin-top: 10px;
+      line-height: 1.55;
+      font-size: 14px;
+      max-width: 72ch;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    button, .ghostBtn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font: inherit;
+      min-height: 42px;
+    }
+    button:hover, .ghostBtn:hover { border-color: rgba(125,211,252,0.35); }
+    .muted { color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .pillRow { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.02);
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+    .pill.good { color: var(--good); border-color: rgba(52,211,153,0.28); }
+    .pill.warn { color: var(--warn); border-color: rgba(251,191,36,0.28); }
+    .pill.info { color: var(--accent); border-color: rgba(125,211,252,0.28); }
+    .serviceGrid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)), var(--card2);
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .svcname {
+      font-size: 17px;
+      font-weight: 650;
+      line-height: 1.15;
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      overflow-wrap: anywhere;
+      font-size: 12px;
+    }
+    .meta {
+      display: grid;
+      gap: 8px;
+    }
+    .metaLine {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .actionRow {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 2px;
+    }
+    .primaryLink, .secondaryLink {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      text-align: center;
+    }
+    .primaryLink {
+      background: linear-gradient(180deg, rgba(125,211,252,0.24), rgba(96,165,250,0.18));
+      border-color: rgba(125,211,252,0.25);
+    }
+    .secondaryLink {
+      color: var(--muted);
+      background: rgba(255,255,255,0.02);
+    }
+    details.preview {
+      margin-top: 4px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 10px;
+    }
+    details.preview summary {
+      list-style: none;
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 13px;
+    }
+    details.preview summary::-webkit-details-marker { display: none; }
+    iframe {
+      width: 100%;
+      height: 55vh;
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #02060b;
+    }
+    @media (min-width: 760px) {
+      .shell { padding: 22px 18px 48px; }
+      .hero { grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.85fr); gap: 16px; }
+      .heroMain { padding: 22px 24px 20px; }
+      .heroAside { padding: 18px 20px; }
+      .serviceGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+      .actionRow { grid-template-columns: auto auto; justify-content: start; }
+    }
+    @media (min-width: 1180px) {
+      .serviceGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+      .card { min-height: 230px; }
+    }
   </style>
 </head>
 <body>
-<header>
-  <div class="row" style="justify-content:space-between; align-items:baseline;">
-    <div>
-      <h1>homelab-home</h1>
-      <div class="sub">Service index and access map for Conductor</div>
-    </div>
-  </div>
-</header>
-<main>
-  <div class="row" style="margin-bottom:10px;">
-    <button id="btnRefresh">Refresh</button>
-    <button id="btnReport">Send report</button>
-    <span class="pill" id="updated">…</span>
-  </div>
+  <div class="shell">
+    <section class="hero">
+      <div class="panel heroMain">
+        <div class="eyebrow">Conductor</div>
+        <h1>Service index and access map for the homelab.</h1>
+        <div class="sub">A cleaner view of what is running, how it’s exposed, and the best route to open it — especially on mobile, where you just want to get to the right thing fast.</div>
+        <div class="controls">
+          <button id="btnRefresh">Refresh</button>
+          <button id="btnReport">Send report</button>
+          <span class="pill" id="updated">…</span>
+        </div>
+      </div>
+      <aside class="panel heroAside">
+        <div class="label">Access types</div>
+        <div class="pillRow">
+          <span class="pill good">TAILNET</span>
+          <span class="pill info">PUBLISHED PORT</span>
+          <span class="pill warn">INTERNAL</span>
+        </div>
+        <div class="muted">This page is a service index and access map — not an uptime theater dashboard. Labels tell you how to think about access.</div>
+      </aside>
+    </section>
 
-  <div class="grid" id="cards"></div>
-</main>
+    <section class="serviceGrid" id="cards"></section>
+  </div>
 
 <script>
   const els = {
@@ -62,23 +245,22 @@
   };
 
   function accessPill(result){
-    if (result?.reason === 'no-published-port') {
-      return `<span class="pill warn">INTERNAL</span>`;
-    }
+    if (result?.reason === 'no-published-port') return '<span class="pill warn">INTERNAL</span>';
     const host = result?.host || '';
-    if (host.startsWith('100.')) {
-      return `<span class="pill good">TAILNET</span>`;
-    }
-    if (host === '0.0.0.0') {
-      return `<span class="pill info">PUBLISHED PORT</span>`;
-    }
-    if (host) {
-      return `<span class="pill good">DIRECT</span>`;
-    }
-    return `<span class="pill warn">UNKNOWN</span>`;
+    if (host.startsWith('100.')) return '<span class="pill good">TAILNET</span>';
+    if (host === '0.0.0.0') return '<span class="pill info">PUBLISHED PORT</span>';
+    if (host) return '<span class="pill good">DIRECT</span>';
+    return '<span class="pill warn">UNKNOWN</span>';
+  }
+
+  function accessHint(result){
+    if (result?.reason === 'no-published-port') return 'No published host port; likely internal or dependency-only.';
+    if (result?.ok) return 'Route probe succeeded.';
+    return 'Route not fully verified from the dashboard container.';
   }
 
   function makeUrl(result, service, fallbackHost){
+    if (service.publicUrl) return service.publicUrl;
     if (!result?.host || !result?.port) return '';
     const host = result.host === '0.0.0.0' ? (fallbackHost || result.host) : result.host;
     return `http://${host}:${result.port}${service.path || '/'}`;
@@ -86,59 +268,49 @@
 
   function cardForService(service, result, fallbackHost){
     const url = makeUrl(result, service, fallbackHost);
-    const embedId = `embed-${service.key}`;
     return `
-      <div class="card">
-        <div class="row" style="justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+      <article class="card">
+        <div class="row">
           <div>
             <div class="svcname">${service.name}</div>
-            <div class="k mono">${service.containerName || service.key}</div>
+            <div class="muted mono">${service.containerName || service.key}</div>
           </div>
           ${accessPill(result)}
         </div>
-        <div class="k">source: ${service.source || 'unknown'}</div>
-        <div class="row" style="margin-top:10px; align-items:center;">
-          <span class="pill">${result?.host || 'n/a'}</span>
-          <span class="pill">${service.port || 'no port'}</span>
-          ${service.containerPort ? `<span class="pill">container ${service.containerPort}</span>` : ''}
-          ${result?.ok ? `<span class="pill good">reachable</span>` : (result?.reason === 'no-published-port' ? '' : `<span class="pill warn">unverified</span>`)}
+
+        <div class="meta">
+          <div class="metaLine">
+            ${service.publicUrl ? `<span class="pill info">${service.publicUrl}</span>` : `<span class="pill">${result?.host || 'n/a'}</span>`}
+            <span class="pill">${service.port || 'no port'}</span>
+            ${service.containerPort ? `<span class="pill">container ${service.containerPort}</span>` : ''}
+          </div>
+          <div class="muted">${accessHint(result)}</div>
         </div>
-        <div class="row" style="margin-top:10px; align-items:center;">
-          ${url ? `<a href="${url}" target="_blank" rel="noreferrer">open</a>` : `<span class="k">no direct URL</span>`}
-          ${service.repoUrl ? `<a class="k" href="${service.repoUrl}" target="_blank" rel="noreferrer">repo</a>` : ''}
-          ${url ? `<button class="k" data-embed="${embedId}" style="padding:6px 10px;">view</button>` : ''}
+
+        <div class="actionRow">
+          ${url ? `<a class="primaryLink" href="${url}" target="_blank" rel="noreferrer">Open service</a>` : `<span class="secondaryLink">No direct URL</span>`}
+          ${service.repoUrl ? `<a class="secondaryLink" href="${service.repoUrl}" target="_blank" rel="noreferrer">Repo</a>` : ''}
         </div>
-        ${url ? `<div id="${embedId}" style="display:none;"><iframe src="${url}"></iframe></div>` : ''}
-      </div>
+
+        ${url ? `<details class="preview"><summary>Inline preview</summary><iframe src="${url}"></iframe></details>` : ''}
+      </article>
     `;
   }
 
   function summarize(j){
-    const lines = [];
-    lines.push('Homelab report');
-    lines.push('');
-    lines.push(`App: ${location.origin}`);
-    if(j?.meta?.repoUrl) lines.push(`Repo: ${j.meta.repoUrl}`);
-    lines.push(`Updated: ${j.updatedAt}`);
-    lines.push('');
-    for(const svc of (j.services || [])){
+    const lines = ['Homelab report', '', `App: ${location.origin}`, `Updated: ${j.updatedAt}`, ''];
+    for (const svc of (j.services || [])) {
       const result = j.results?.[svc.key] || {};
-      const state = result.reason === 'no-published-port'
-        ? 'INTERNAL'
-        : (result.host && result.host.startsWith('100.')
-            ? 'TAILNET'
-            : (result.host ? 'PUBLISHED PORT' : 'UNKNOWN'));
-      lines.push(`- ${svc.name} (${svc.containerName || svc.key}) ${state} ${result.host ? `${result.host}:${result.port}` : ''}`.trim());
+      const label = result.reason === 'no-published-port' ? 'INTERNAL' : (result.host && result.host.startsWith('100.') ? 'TAILNET' : (result.host ? 'PUBLISHED PORT' : 'UNKNOWN'));
+      lines.push(`- ${svc.name} (${svc.containerName || svc.key}) ${label} ${result.host ? `${result.host}:${result.port}` : ''}`.trim());
     }
-    lines.push('');
-    lines.push('Request: please help me fix what looks off.');
+    lines.push('', 'Request: please help me fix what looks off.');
     return lines.join('\n');
   }
 
   function makeTelegramLink(username, text){
     const u = (username || '').replace(/^@/, '');
-    const encoded = encodeURIComponent(text);
-    return `https://t.me/${u}?text=${encoded}`;
+    return `https://t.me/${u}?text=${encodeURIComponent(text)}`;
   }
 
   async function load(){
@@ -152,42 +324,21 @@
 
   async function sendReport(){
     const popup = window.open('about:blank', '_blank');
-    let j;
     try {
-      j = await load();
-    } catch (e) {
+      const j = await load();
+      const url = makeTelegramLink(j?.meta?.telegramUsername || 'danmaps_clawd_bot', summarize(j));
+      if (popup) popup.location.href = url;
+      else window.location.href = url;
+    } catch {
       const msg = 'Failed to load /api/status. Is homelab-home running?';
       if (popup) popup.document.body.textContent = msg;
       else alert(msg);
-      return;
-    }
-
-    const msg = summarize(j);
-    const username = j?.meta?.telegramUsername || 'danmaps_clawd_bot';
-    const url = makeTelegramLink(username, msg);
-
-    if (popup) {
-      try { popup.location.href = url; } catch {}
-    } else {
-      window.location.href = url;
     }
   }
 
-  function wireEmbeds(){
-    document.querySelectorAll('button[data-embed]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const id = btn.getAttribute('data-embed');
-        const el = document.getElementById(id);
-        if(!el) return;
-        el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
-      });
-    });
-  }
-
-  els.btnRefresh.addEventListener('click', async () => { await load(); wireEmbeds(); });
+  els.btnRefresh.addEventListener('click', load);
   els.btnReport.addEventListener('click', sendReport);
-  load().then(wireEmbeds);
+  load();
 </script>
 </body>
 </html>
