@@ -101,7 +101,7 @@
           <span class="pill">${result?.host || 'n/a'}</span>
           <span class="pill">${service.port || 'no port'}</span>
           ${service.containerPort ? `<span class="pill">container ${service.containerPort}</span>` : ''}
-          ${result?.ok ? `<span class="pill good">reachable</span>` : (result?.reason === 'no-published-port' ? '' : `<span class="pill warn">check route</span>`)}
+          ${result?.ok ? `<span class="pill good">reachable</span>` : (result?.reason === 'no-published-port' ? '' : `<span class="pill warn">unverified</span>`)}
         </div>
         <div class="row" style="margin-top:10px; align-items:center;">
           ${url ? `<a href="${url}" target="_blank" rel="noreferrer">open</a>` : `<span class="k">no direct URL</span>`}
