@@ -114,7 +114,7 @@
     lines.push('');
     for(const svc of (j.services || [])){
       const result = j.results?.[svc.key] || {};
-      const state = result.reason === 'no-published-port' ? 'INTERNAL' : (result.ok ? 'UP' : 'DOWN');
+      const state = result.reason === 'no-published-port' ? 'INTERNAL' : (result.host && result.host.startsWith('100.') ? 'TAILNET' : (result.host ? 'PUBLISHED PORT' : 'UNKNOWN'));
       lines.push(`- ${svc.name} (${svc.containerName || svc.key}) ${state} ${result.host ? `${result.host}:${result.port}` : ''}`.trim());
     }
     lines.push('');
@@ -173,6 +173,12 @@
   }
 
   els.btnRefresh.addEventListener('click', async () => { await load(); wireEmbeds(); });
+  els.btnReport.addEventListener('click', sendReport);
+  load().then(wireEmbeds);
+</script>
+</body>
+</html>
+ner('click', async () => { await load(); wireEmbeds(); });
   els.btnReport.addEventListener('click', sendReport);
   load().then(wireEmbeds);
 </script>
