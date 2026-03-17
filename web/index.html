@@ -7,7 +7,7 @@
   <style>
     :root{
       --bg:#0b0f14; --card:#101826; --text:#e9eef6; --muted:#a9b4c1;
-      --border:#1f2a3a; --good:#34d399; --bad:#fb7185; --warn:#fbbf24;
+      --border:#1f2a3a; --good:#34d399; --bad:#fb7185; --warn:#fbbf24; --info:#7dd3fc;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
     body{ margin:0; background:var(--bg); color:var(--text); }
@@ -24,6 +24,7 @@
     .pill.good{ color: var(--good); border-color: rgba(52,211,153,0.35); }
     .pill.bad{ color: var(--bad); border-color: rgba(251,113,133,0.35); }
     .pill.warn{ color: var(--warn); border-color: rgba(251,191,36,0.35); }
+    .pill.info{ color: var(--info); border-color: rgba(125,211,252,0.35); }
     a{ color:#7dd3fc; text-decoration:none; }
     a:hover{ text-decoration:underline; }
     button{ background:transparent; color:var(--text); border:1px solid var(--border); padding:10px 12px; border-radius:10px; }
@@ -38,7 +39,7 @@
   <div class="row" style="justify-content:space-between; align-items:baseline;">
     <div>
       <h1>homelab-home</h1>
-      <div class="sub">Running services on Conductor</div>
+      <div class="sub">Service index and access map for Conductor</div>
     </div>
     <div class="row">
       <a class="pill" href="/onboarding.html">Onboarding</a>
@@ -63,17 +64,27 @@
     updated: document.getElementById('updated'),
   };
 
-  function statusPill(result){
+  function accessPill(result){
     if (result?.reason === 'no-published-port') {
       return `<span class="pill warn">INTERNAL</span>`;
     }
-    const ok = !!result?.ok;
-    return `<span class="pill ${ok ? 'good' : 'bad'}">${ok ? 'UP' : 'DOWN'}</span>`;
+    const host = result?.host || '';
+    if (host.startsWith('100.')) {
+      return `<span class="pill good">TAILNET</span>`;
+    }
+    if (host === '0.0.0.0') {
+      return `<span class="pill info">PUBLISHED PORT</span>`;
+    }
+    if (host) {
+      return `<span class="pill good">DIRECT</span>`;
+    }
+    return `<span class="pill warn">UNKNOWN</span>`;
   }
 
   function makeUrl(result, service, fallbackHost){
     if (!result?.host || !result?.port) return '';
-    return `http://${result.host || fallbackHost}:${result.port}${service.path || '/'}`;
+    const host = result.host === '0.0.0.0' ? (fallbackHost || result.host) : result.host;
+    return `http://${host}:${result.port}${service.path || '/'}`;
   }
 
   function cardForService(service, result, fallbackHost){
@@ -93,9 +104,10 @@
           <span class="pill">${result?.host || 'n/a'}</span>
           <span class="pill">${service.port || 'no port'}</span>
           ${service.containerPort ? `<span class="pill">container ${service.containerPort}</span>` : ''}
+          ${result?.ok ? `<span class="pill good">reachable</span>` : (result?.reason === 'no-published-port' ? '' : `<span class="pill warn">check route</span>`)}
         </div>
         <div class="row" style="margin-top:10px; align-items:center;">
-          ${url ? `<a href="${url}" target="_blank" rel="noreferrer">open</a>` : `<span class="k">no public URL</span>`}
+          ${url ? `<a href="${url}" target="_blank" rel="noreferrer">open</a>` : `<span class="k">no direct URL</span>`}
           ${service.repoUrl ? `<a class="k" href="${service.repoUrl}" target="_blank" rel="noreferrer">repo</a>` : ''}
           ${url ? `<button class="k" data-embed="${embedId}" style="padding:6px 10px;">view</button>` : ''}
         </div>
@@ -114,7 +126,11 @@
     lines.push('');
     for(const svc of (j.services || [])){
       const result = j.results?.[svc.key] || {};
-      const state = result.reason === 'no-published-port' ? 'INTERNAL' : (result.host && result.host.startsWith('100.') ? 'TAILNET' : (result.host ? 'PUBLISHED PORT' : 'UNKNOWN'));
+      const state = result.reason === 'no-published-port'
+        ? 'INTERNAL'
+        : (result.host && result.host.startsWith('100.')
+            ? 'TAILNET'
+            : (result.host ? 'PUBLISHED PORT' : 'UNKNOWN'));
       lines.push(`- ${svc.name} (${svc.containerName || svc.key}) ${state} ${result.host ? `${result.host}:${result.port}` : ''}`.trim());
     }
     lines.push('');
@@ -173,23 +189,6 @@
   }
 
   els.btnRefresh.addEventListener('click', async () => { await load(); wireEmbeds(); });
-  els.btnReport.addEventListener('click', sendReport);
-  load().then(wireEmbeds);
-</script>
-</body>
-</html>
-ner('click', async () => { await load(); wireEmbeds(); });
-  els.btnReport.addEventListener('click', sendReport);
-  load().then(wireEmbeds);
-</script>
-</body>
-</html>
-ner('click', sendReport);
-  load().then(wireEmbeds);
-</script>
-</body>
-</html>
-ner('click', async () => { await load(); wireEmbeds(); });
   els.btnReport.addEventListener('click', sendReport);
   load().then(wireEmbeds);
 </script>
