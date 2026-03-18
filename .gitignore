@@ -1,6 +1,7 @@
 node_modules
 config.local.json
 .env
+**/.env
 .DS_Store
 config.json
 config.local.json

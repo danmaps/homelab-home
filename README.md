@@ -76,6 +76,21 @@ Service has a host-published port, but may still be reached through some other p
 ### INTERNAL
 Service has no published host port and is primarily useful as an internal dependency or admin-only component.
 
+## Umami analytics
+
+This repo now also includes a dedicated self-hosted Umami stack under `umami/`.
+
+Target URL:
+- `https://analytics.dannymcvey.com`
+
+Docs:
+- `docs/umami.md`
+
+Highlights:
+- dedicated Postgres for Umami
+- Umami bound to `127.0.0.1:3002` by default
+- intended to sit behind the existing Caddy reverse proxy
+
 ## Notes
 
 - This does not expose anything new to the internet by itself.

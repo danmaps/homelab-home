@@ -60,6 +60,8 @@ function normalizeServices(services) {
       port,
       path: String(s.path || '/'),
       repoUrl: s.repoUrl ? String(s.repoUrl) : '',
+      publicUrl: s.publicUrl ? String(s.publicUrl) : '',
+      host: s.host ? String(s.host) : '',
       source: 'config',
     });
   }

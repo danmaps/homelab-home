@@ -17,3 +17,14 @@ Add to `crontab -e`:
 ## Tailscale access
 Bind in `docker-compose.yml` to your Tailscale IP (e.g., `100.87.16.33:3499:3499`).
 Then access: `http://100.87.16.33:3499`
+
+## Umami analytics stack
+
+Umami is kept separate from the dashboard app.
+
+See:
+- `docs/umami.md`
+- `umami/docker-compose.yml`
+
+That stack is meant to run on localhost behind Caddy at:
+- `https://analytics.dannymcvey.com`
