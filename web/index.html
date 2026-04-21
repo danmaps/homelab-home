@@ -756,16 +756,21 @@
   }
 
   async function sendReport(){
-    const popup = window.open('about:blank', '_blank');
     try {
       const j = await load();
-      const url = makeTelegramLink(j?.meta?.telegramUsername || 'danmaps_clawd_bot', summarize(j));
-      if (popup) popup.location.href = url;
-      else window.location.href = url;
+      const reportText = summarize(j);
+      const url = makeTelegramLink(j?.meta?.telegramUsername || 'danmaps_clawd_bot', reportText);
+
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(reportText);
+        }
+      } catch {}
+
+      window.location.href = url;
     } catch {
       const msg = 'Failed to load /api/status. Is homelab-home running?';
-      if (popup) popup.document.body.textContent = msg;
-      else alert(msg);
+      alert(msg);
     }
   }
 
