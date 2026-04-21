@@ -3,121 +3,380 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>homelab-home</title>
+  <title>homelab-home // DATAOPS</title>
   <style>
     :root {
-      --bg: #09111b;
-      --bg2: #0e1724;
-      --card: rgba(15, 23, 36, 0.9);
-      --card2: rgba(18, 29, 45, 0.95);
-      --text: #edf4ff;
-      --muted: #98a8bc;
-      --border: rgba(255,255,255,0.08);
-      --accent: #7dd3fc;
-      --accent2: #60a5fa;
-      --good: #34d399;
-      --warn: #fbbf24;
-      --shadow: 0 18px 48px rgba(0,0,0,0.35);
-      --radius: 18px;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      --bg: #040205;
+      --bg-soft: #0b0710;
+      --panel: rgba(12, 8, 16, 0.92);
+      --panel-2: rgba(18, 11, 24, 0.95);
+      --panel-3: rgba(10, 8, 14, 0.98);
+      --line: rgba(255, 86, 181, 0.22);
+      --line-strong: rgba(255, 86, 181, 0.52);
+      --text: #f7f0f7;
+      --muted: #bcaac0;
+      --muted-2: #897486;
+      --accent: #ff4db8;
+      --accent-2: #ff7ac9;
+      --good: #46f5b0;
+      --warn: #ffd166;
+      --danger: #ff7a9d;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.58);
+      --radius: 20px;
+      --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
+
     * { box-sizing: border-box; }
+    html { color-scheme: dark; }
     body {
       margin: 0;
       min-height: 100vh;
       color: var(--text);
+      font-family: var(--sans);
       background:
-        radial-gradient(circle at top left, rgba(96,165,250,0.14), transparent 26%),
-        radial-gradient(circle at top right, rgba(125,211,252,0.08), transparent 20%),
-        linear-gradient(180deg, var(--bg), var(--bg2));
+        radial-gradient(circle at top left, rgba(255, 77, 184, 0.18), transparent 25%),
+        radial-gradient(circle at top right, rgba(255, 77, 184, 0.08), transparent 22%),
+        linear-gradient(180deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0) 100%),
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.028) 0, rgba(255,255,255,0.028) 1px, transparent 1px, transparent 4px),
+        linear-gradient(180deg, #020103 0%, #08040b 38%, #030204 100%);
+      background-attachment: fixed;
     }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.012) 0, transparent 18%, rgba(255,255,255,0.012) 36%, transparent 54%, rgba(255,255,255,0.012) 72%, transparent 100%);
+      mix-blend-mode: screen;
+      opacity: 0.35;
+    }
+
     a { color: inherit; text-decoration: none; }
-    .shell { max-width: 1360px; margin: 0 auto; padding: 16px 14px 40px; }
+
+    .shell {
+      position: relative;
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 14px 12px 44px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font: 11px/1.2 var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+    }
+
     .hero {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
+      gap: 12px;
       margin-bottom: 14px;
     }
-    .panel {
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)), var(--card);
-      border-radius: 24px;
+
+    .frame {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)),
+        var(--panel);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
+      overflow: hidden;
+      isolation: isolate;
     }
-    .heroMain { padding: 18px 18px 16px; }
-    .heroAside { padding: 16px 18px; display: grid; gap: 10px; }
-    .eyebrow {
-      color: var(--accent);
-      font-size: 11px;
-      letter-spacing: .14em;
+
+    .frame::before,
+    .frame::after {
+      content: "";
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      pointer-events: none;
+      border-color: var(--accent);
+      opacity: 0.95;
+    }
+
+    .frame::before {
+      top: 10px;
+      left: 10px;
+      border-top: 2px solid;
+      border-left: 2px solid;
+    }
+
+    .frame::after {
+      right: 10px;
+      bottom: 10px;
+      border-right: 2px solid;
+      border-bottom: 2px solid;
+    }
+
+    .frameGlow {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top right, rgba(255, 77, 184, 0.14), transparent 30%),
+        linear-gradient(180deg, rgba(255, 77, 184, 0.045), transparent 48%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .heroMain {
+      padding: 18px 16px 16px;
+      min-height: 100%;
+    }
+
+    .heroGrid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .eyebrow,
+    .kicker,
+    .sectionTitle,
+    .label,
+    .serviceLabel {
+      font-family: var(--mono);
       text-transform: uppercase;
-      margin-bottom: 8px;
+      letter-spacing: 0.18em;
     }
+
+    .eyebrow {
+      color: var(--accent-2);
+      font-size: 11px;
+      margin-bottom: 10px;
+    }
+
     h1 {
       margin: 0;
-      font-size: clamp(1.65rem, 6vw, 3rem);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
+      font-size: clamp(2.7rem, 14vw, 7rem);
+      line-height: 0.9;
+      letter-spacing: -0.06em;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-shadow: 0 0 18px rgba(255, 77, 184, 0.12);
     }
+
+    .slash {
+      color: var(--accent);
+      display: block;
+      margin-top: 6px;
+    }
+
+    .heroCopy {
+      display: grid;
+      gap: 12px;
+      max-width: 78ch;
+    }
+
     .sub {
       color: var(--muted);
-      margin-top: 10px;
-      line-height: 1.55;
+      margin: 0;
+      line-height: 1.6;
       font-size: 14px;
-      max-width: 72ch;
     }
-    .controls {
-      display: flex;
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
     }
-    button, .ghostBtn {
-      appearance: none;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.04);
-      color: var(--text);
+
+    .metric {
+      border: 1px solid rgba(255, 77, 184, 0.16);
+      border-radius: 14px;
       padding: 10px 12px;
-      border-radius: 12px;
-      cursor: pointer;
-      font: inherit;
-      min-height: 42px;
+      background: rgba(255, 255, 255, 0.015);
     }
-    button:hover, .ghostBtn:hover { border-color: rgba(125,211,252,0.35); }
-    .muted { color: var(--muted); font-size: 13px; line-height: 1.45; }
-    .pillRow { display: flex; gap: 8px; flex-wrap: wrap; }
-    .pill {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
+
+    .metricValue {
+      display: block;
+      font: 700 clamp(1.1rem, 6vw, 1.5rem)/1 var(--mono);
+      color: var(--text);
+      margin-top: 5px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    button,
+    .ghostBtn,
+    .primaryLink,
+    .secondaryLink {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      min-height: 44px;
+      padding: 11px 14px;
+      cursor: pointer;
+      color: var(--text);
+      font: 600 13px/1.2 var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(255,255,255,0.03);
+      transition: border-color 120ms ease, transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
+    }
+
+    button:hover,
+    .ghostBtn:hover,
+    .primaryLink:hover,
+    .secondaryLink:hover {
+      border-color: var(--line-strong);
+      transform: translateY(-1px);
+    }
+
+    button:active,
+    .ghostBtn:active,
+    .primaryLink:active,
+    .secondaryLink:active {
+      transform: translateY(0);
+    }
+
+    .primaryBtn,
+    .primaryLink {
+      background: linear-gradient(180deg, rgba(255, 77, 184, 0.24), rgba(255, 77, 184, 0.11));
+      box-shadow: inset 0 0 0 1px rgba(255, 122, 201, 0.08), 0 0 24px rgba(255, 77, 184, 0.08);
+    }
+
+    .secondaryLink,
+    .ghostBtn {
       color: var(--muted);
-      font-size: 12px;
-      background: rgba(255,255,255,0.02);
+      background: rgba(255,255,255,0.018);
+    }
+
+    .heroAside {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.008)),
+        var(--panel-2);
+    }
+
+    .asideBlock {
+      display: grid;
+      gap: 8px;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .asideBlock:first-of-type { border-top: 0; padding-top: 0; }
+
+    .label {
+      color: var(--muted-2);
+      font-size: 10px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .pillRow,
+    .statusRow {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
       max-width: 100%;
       overflow-wrap: anywhere;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.028);
+      color: var(--muted);
+      font: 500 11px/1.2 var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
-    .pill.good { color: var(--good); border-color: rgba(52,211,153,0.28); }
-    .pill.warn { color: var(--warn); border-color: rgba(251,191,36,0.28); }
-    .pill.info { color: var(--accent); border-color: rgba(125,211,252,0.28); }
+
+    .pill.good { color: var(--good); border-color: rgba(70, 245, 176, 0.26); }
+    .pill.warn { color: var(--warn); border-color: rgba(255, 209, 102, 0.26); }
+    .pill.info { color: var(--accent-2); border-color: rgba(255, 122, 201, 0.28); }
+    .pill.danger { color: var(--danger); border-color: rgba(255, 122, 157, 0.25); }
+
+    .sectionBar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 0 12px;
+      padding: 0 2px;
+    }
+
+    .sectionTitle {
+      color: var(--text);
+      font-size: 12px;
+      margin: 0;
+    }
+
+    .sectionNote {
+      color: var(--muted-2);
+      font: 11px/1.4 var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
     .serviceGrid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 12px;
-      margin-top: 12px;
     }
+
     .card {
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)), var(--card2);
-      box-shadow: var(--shadow);
+      position: relative;
       display: grid;
-      gap: 12px;
+      gap: 14px;
       align-content: start;
+      padding: 16px;
+      border: 1px solid rgba(255, 77, 184, 0.16);
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008)),
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 4px),
+        var(--panel-3);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02), var(--shadow);
+      overflow: hidden;
     }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 77, 184, 0.06), transparent 42%);
+      pointer-events: none;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      width: 18px;
+      height: 18px;
+      border-top: 2px solid rgba(255, 77, 184, 0.7);
+      border-left: 2px solid rgba(255, 77, 184, 0.7);
+      opacity: 0.85;
+      pointer-events: none;
+    }
+
     .row {
       display: flex;
       justify-content: space-between;
@@ -125,115 +384,182 @@
       gap: 12px;
       flex-wrap: wrap;
     }
+
     .svcname {
-      font-size: 17px;
-      font-weight: 650;
-      line-height: 1.15;
+      margin-top: 4px;
+      font-size: 1.06rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      text-transform: uppercase;
     }
+
+    .serviceLabel {
+      color: var(--muted-2);
+      font-size: 10px;
+    }
+
     .mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      overflow-wrap: anywhere;
+      font-family: var(--mono);
       font-size: 12px;
+      overflow-wrap: anywhere;
     }
+
     .meta {
       display: grid;
-      gap: 8px;
+      gap: 10px;
     }
+
     .metaLine {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
-    .label {
+
+    .hint {
+      margin: 0;
       color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
+      font-size: 13px;
+      line-height: 1.55;
     }
+
     .actionRow {
       display: grid;
       grid-template-columns: 1fr;
       gap: 10px;
-      margin-top: 2px;
     }
-    .primaryLink, .secondaryLink {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      padding: 0 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      font-size: 14px;
-      text-align: center;
-    }
-    .primaryLink {
-      background: linear-gradient(180deg, rgba(125,211,252,0.24), rgba(96,165,250,0.18));
-      border-color: rgba(125,211,252,0.25);
-    }
-    .secondaryLink {
-      color: var(--muted);
-      background: rgba(255,255,255,0.02);
-    }
+
     details.preview {
-      margin-top: 4px;
-      border-top: 1px solid rgba(255,255,255,0.05);
+      margin-top: 2px;
+      border-top: 1px solid rgba(255,255,255,0.06);
       padding-top: 10px;
     }
+
     details.preview summary {
       list-style: none;
       cursor: pointer;
-      color: var(--accent);
-      font-size: 13px;
+      color: var(--accent-2);
+      font: 600 12px/1.2 var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
+
     details.preview summary::-webkit-details-marker { display: none; }
+
     iframe {
       width: 100%;
       height: 55vh;
       margin-top: 10px;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255, 77, 184, 0.16);
       border-radius: 14px;
-      background: #02060b;
+      background: #020203;
     }
-    @media (min-width: 760px) {
-      .shell { padding: 22px 18px 48px; }
-      .hero { grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.85fr); gap: 16px; }
-      .heroMain { padding: 22px 24px 20px; }
-      .heroAside { padding: 18px 20px; }
-      .serviceGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-      .actionRow { grid-template-columns: auto auto; justify-content: start; }
+
+    @media (min-width: 680px) {
+      .shell { padding: 18px 16px 50px; }
+      .controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .serviceGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .actionRow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-    @media (min-width: 1180px) {
-      .serviceGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-      .card { min-height: 230px; }
+
+    @media (min-width: 960px) {
+      .hero {
+        grid-template-columns: minmax(0, 1.45fr) minmax(330px, 0.78fr);
+        align-items: stretch;
+      }
+
+      .heroMain { padding: 22px 22px 20px; }
+      .heroAside { padding: 18px; }
+      .heroGrid { grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.62fr); align-items: end; }
+      .metrics { grid-template-columns: 1fr; }
+      .serviceGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    }
+
+    @media (min-width: 1280px) {
+      .serviceGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .card { min-height: 250px; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
+    <div class="topline">
+      <span>Conductor // Homelab Home</span>
+      <span>Mobile-first access console</span>
+    </div>
+
     <section class="hero">
-      <div class="panel heroMain">
-        <div class="eyebrow">Conductor</div>
-        <h1>Service index and access map for the homelab.</h1>
-        <div class="sub">A cleaner view of what is running, how it’s exposed, and the best route to open it — especially on mobile, where you just want to get to the right thing fast.</div>
-        <div class="controls">
-          <button id="btnRefresh">Refresh</button>
-          <button id="btnReport">Send report</button>
-          <span class="pill" id="updated">…</span>
+      <div class="frame heroMain">
+        <div class="frameGlow"></div>
+        <div class="eyebrow">Ops surface // service index + access map</div>
+        <div class="heroGrid">
+          <div class="heroCopy">
+            <div>
+              <h1>DATAOPS <span class="slash">// ACCESS</span></h1>
+            </div>
+            <p class="sub">Service index and access map for the homelab. Built to get you to the right surface fast, show how each route is exposed, and keep the useful reality of the stack visible instead of pretending to be an uptime theater dashboard.</p>
+            <div class="controls">
+              <button class="primaryBtn" id="btnRefresh">Refresh grid</button>
+              <button id="btnReport">Send report</button>
+            </div>
+          </div>
+
+          <div class="metrics">
+            <div class="metric">
+              <div class="label">Services indexed</div>
+              <span class="metricValue" id="metricServices">--</span>
+            </div>
+            <div class="metric">
+              <div class="label">Reachable routes</div>
+              <span class="metricValue" id="metricReachable">--</span>
+            </div>
+            <div class="metric">
+              <div class="label">Last sync</div>
+              <span class="metricValue" id="updated">--</span>
+            </div>
+            <div class="metric">
+              <div class="label">Mode</div>
+              <span class="metricValue" id="metricMode">MOBILE</span>
+            </div>
+          </div>
         </div>
       </div>
-      <aside class="panel heroAside">
-        <div class="label">Access types</div>
-        <div class="pillRow">
-          <span class="pill good">TAILNET</span>
-          <span class="pill info">PUBLISHED PORT</span>
-          <span class="pill warn">INTERNAL</span>
+
+      <aside class="frame heroAside">
+        <div>
+          <div class="sectionTitle">Route classes</div>
+          <div class="muted">Use labels as access thinking, not status theater.</div>
         </div>
-        <div class="muted">This page is a service index and access map — not an uptime theater dashboard. Labels tell you how to think about access.</div>
+
+        <div class="pillRow">
+          <span class="pill good">Tailnet</span>
+          <span class="pill info">Published port</span>
+          <span class="pill warn">Internal</span>
+          <span class="pill danger">Probe cold</span>
+        </div>
+
+        <div class="asideBlock">
+          <div class="label">Console note</div>
+          <div class="muted">Cards preserve the current service index / access map behavior, while the visual layer shifts the app into a darker cyber-ops console style.</div>
+        </div>
+
+        <div class="asideBlock">
+          <div class="label">Default route bias</div>
+          <div class="statusRow">
+            <span class="pill" id="tailscaleIp">TAILSCALE // --</span>
+            <span class="pill" id="lanIp">LAN // --</span>
+          </div>
+        </div>
       </aside>
     </section>
 
-    <section class="serviceGrid" id="cards"></section>
+    <section>
+      <div class="sectionBar">
+        <h2 class="sectionTitle">Service wall</h2>
+        <div class="sectionNote">Inline preview remains optional per card</div>
+      </div>
+      <div class="serviceGrid" id="cards"></div>
+    </section>
   </div>
 
 <script>
@@ -242,6 +568,11 @@
     btnRefresh: document.getElementById('btnRefresh'),
     btnReport: document.getElementById('btnReport'),
     updated: document.getElementById('updated'),
+    metricServices: document.getElementById('metricServices'),
+    metricReachable: document.getElementById('metricReachable'),
+    metricMode: document.getElementById('metricMode'),
+    tailscaleIp: document.getElementById('tailscaleIp'),
+    lanIp: document.getElementById('lanIp'),
   };
 
   function accessPill(result){
@@ -253,10 +584,16 @@
     return '<span class="pill warn">UNKNOWN</span>';
   }
 
+  function probePill(result){
+    if (result?.reason === 'no-published-port') return '<span class="pill warn">NO HOST PORT</span>';
+    if (result?.ok) return '<span class="pill good">PROBE OK</span>';
+    return '<span class="pill danger">PROBE COLD</span>';
+  }
+
   function accessHint(result){
-    if (result?.reason === 'no-published-port') return 'No published host port; likely internal or dependency-only.';
-    if (result?.ok) return 'Route probe succeeded.';
-    return 'Route not fully verified from the dashboard container.';
+    if (result?.reason === 'no-published-port') return 'No published host port; likely internal-only, dependency-only, or intentionally not exposed.';
+    if (result?.ok) return 'Route probe succeeded from the dashboard container context.';
+    return 'Route exists but probe was not fully verified from the dashboard container.';
   }
 
   function makeUrl(result, service, fallbackHost){
@@ -266,30 +603,39 @@
     return `http://${host}:${result.port}${service.path || '/'}`;
   }
 
+  function routeSummary(result, service){
+    if (service.publicUrl) return service.publicUrl;
+    if (!result?.host || !result?.port) return 'unmapped';
+    return `${result.host}:${result.port}`;
+  }
+
   function cardForService(service, result, fallbackHost){
     const url = makeUrl(result, service, fallbackHost);
     return `
       <article class="card">
         <div class="row">
           <div>
+            <div class="serviceLabel">${service.source || 'service'} // ${service.containerName || service.key}</div>
             <div class="svcname">${service.name}</div>
-            <div class="muted mono">${service.containerName || service.key}</div>
           </div>
           ${accessPill(result)}
         </div>
 
         <div class="meta">
           <div class="metaLine">
-            ${service.publicUrl ? `<span class="pill info">${service.publicUrl}</span>` : `<span class="pill">${result?.host || 'n/a'}</span>`}
-            <span class="pill">${service.port || 'no port'}</span>
-            ${service.containerPort ? `<span class="pill">container ${service.containerPort}</span>` : ''}
+            ${probePill(result)}
+            <span class="pill">PORT ${service.port || 'n/a'}</span>
+            ${service.containerPort ? `<span class="pill">CTR ${service.containerPort}</span>` : ''}
           </div>
-          <div class="muted">${accessHint(result)}</div>
+          <div class="metaLine">
+            <span class="pill">ROUTE ${routeSummary(result, service)}</span>
+          </div>
+          <p class="hint">${accessHint(result)}</p>
         </div>
 
         <div class="actionRow">
           ${url ? `<a class="primaryLink" href="${url}" target="_blank" rel="noreferrer">Open service</a>` : `<span class="secondaryLink">No direct URL</span>`}
-          ${service.repoUrl ? `<a class="secondaryLink" href="${service.repoUrl}" target="_blank" rel="noreferrer">Repo</a>` : ''}
+          ${service.repoUrl ? `<a class="secondaryLink" href="${service.repoUrl}" target="_blank" rel="noreferrer">Open repo</a>` : ''}
         </div>
 
         ${url ? `<details class="preview"><summary>Inline preview</summary><iframe src="${url}"></iframe></details>` : ''}
@@ -316,9 +662,19 @@
   async function load(){
     const r = await fetch('/api/status');
     const j = await r.json();
-    els.updated.textContent = `updated ${new Date(j.updatedAt).toLocaleString()}`;
+    const updated = new Date(j.updatedAt);
+    const services = j.services || [];
+    const results = j.results || {};
+    const reachable = services.filter((svc) => results?.[svc.key]?.ok).length;
     const fallbackHost = j?.ips?.tailscale || '100.87.16.33';
-    els.cards.innerHTML = (j.services || []).map((svc) => cardForService(svc, j.results?.[svc.key], fallbackHost)).join('');
+
+    els.updated.textContent = updated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    els.metricServices.textContent = String(services.length).padStart(2, '0');
+    els.metricReachable.textContent = `${String(reachable).padStart(2, '0')} / ${String(services.length).padStart(2, '0')}`;
+    els.metricMode.textContent = window.innerWidth < 680 ? 'MOBILE' : (window.innerWidth < 960 ? 'FIELD' : 'WIDE');
+    els.tailscaleIp.textContent = `TAILSCALE // ${j?.ips?.tailscale || 'NONE'}`;
+    els.lanIp.textContent = `LAN // ${j?.ips?.lan || 'NONE'}`;
+    els.cards.innerHTML = services.map((svc) => cardForService(svc, results?.[svc.key], fallbackHost)).join('');
     return j;
   }
 
@@ -338,6 +694,9 @@
 
   els.btnRefresh.addEventListener('click', load);
   els.btnReport.addEventListener('click', sendReport);
+  window.addEventListener('resize', () => {
+    els.metricMode.textContent = window.innerWidth < 680 ? 'MOBILE' : (window.innerWidth < 960 ? 'FIELD' : 'WIDE');
+  });
   load();
 </script>
 </body>
