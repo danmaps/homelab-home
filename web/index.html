@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>homelab-home // DATAOPS</title>
+  <title>conductor // access</title>
   <style>
     :root {
       --bg: #050705;
@@ -272,7 +272,7 @@
     .primaryBtn,
     .primaryLink {
       background: linear-gradient(180deg, rgba(125, 255, 159, 0.16), rgba(125, 255, 159, 0.08));
-      color: #031006;
+      color: #60ad71;
       box-shadow: inset 0 -1px 0 rgba(0,0,0,0.18);
     }
 
@@ -570,26 +570,17 @@
 </head>
 <body>
   <div class="shell">
-    <div class="topline">
-      <span>Conductor // Homelab Home</span>
-      <span>Mobile-first access console</span>
-    </div>
 
     <section class="hero">
       <div class="frame heroMain">
         <div class="frameGlow"></div>
-        <div class="eyebrow">Ops surface // service index + access map</div>
         <div class="heroGrid">
           <div class="heroCopy">
             <div class="heroMeta">
-              <span class="metaChip live">Live console</span>
-              <span class="metaChip">Homelab routing</span>
-              <span class="metaChip">Mobile first</span>
             </div>
             <div>
-              <h1>DATAOPS <span class="slash">// ACCESS</span></h1>
+              <h1>CONDUCTOR <span class="slash">// ACCESS</span></h1>
             </div>
-            <p class="sub">Service index and access map for the homelab. Built to get you to the right surface fast, show how each route is exposed, and keep the useful reality of the stack visible instead of pretending to be an uptime theater dashboard.</p>
             <div class="controls">
               <button class="primaryBtn" id="btnRefresh">Refresh grid</button>
               <button id="btnReport">Send report</button>
@@ -619,8 +610,6 @@
 
       <aside class="frame heroAside">
         <div>
-          <div class="sectionTitle">Route classes</div>
-          <div class="muted">Use labels as access thinking, not status theater.</div>
         </div>
 
         <div class="pillRow">
@@ -630,13 +619,8 @@
           <span class="pill danger">Probe cold</span>
         </div>
 
-        <div class="asideBlock">
-          <div class="label">Console note</div>
-          <div class="muted">Cards preserve the current service index / access map behavior, while the visual layer shifts the app into a darker cyber-ops console style.</div>
-        </div>
 
         <div class="asideBlock">
-          <div class="label">Default route bias</div>
           <div class="statusRow">
             <span class="pill" id="tailscaleIp">TAILSCALE // --</span>
             <span class="pill" id="lanIp">LAN // --</span>
@@ -647,8 +631,6 @@
 
     <section>
       <div class="sectionBar">
-        <h2 class="sectionTitle">Service wall</h2>
-        <div class="sectionNote">Inline preview remains optional per card</div>
       </div>
       <div class="serviceGrid" id="cards"></div>
     </section>
