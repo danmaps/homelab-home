@@ -218,7 +218,9 @@ app.get('/api/status', async (_req, res) => {
       continue;
     }
     const displayHost = s.hostIp || tailscaleHost;
-    const probeHost = (!displayHost || displayHost === '0.0.0.0') ? 'host.docker.internal' : displayHost;
+    const probeHost = (!displayHost || displayHost === '0.0.0.0' || displayHost === tailscaleHost || displayHost === ips.lan)
+      ? 'host.docker.internal'
+      : displayHost;
     const ok = await probePort(probeHost, Number(s.port));
     results[s.key] = { ok, host: displayHost, port: Number(s.port) };
   }
