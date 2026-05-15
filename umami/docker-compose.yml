@@ -28,7 +28,7 @@ services:
       umami-db:
         condition: service_healthy
     ports:
-      - "127.0.0.1:${UMAMI_PORT:-3002}:3000"
+      - "${UMAMI_PORT:-3002}:3000"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-umami}:${POSTGRES_PASSWORD}@umami-db:5432/${POSTGRES_DB:-umami}
       DATABASE_TYPE: postgresql
