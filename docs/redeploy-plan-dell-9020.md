@@ -10,7 +10,6 @@ Move the home lab services to a new machine (refurb Dell 9020) running Ubuntu Se
 Services mentioned recently (verify list):
 - homelab-home
 - kanban
-- schoolscout
 - esrismells
 - photobook
 - (plus anything else on the current host)
@@ -150,10 +149,9 @@ For each service:
 
 Suggested order (low to high risk):
 1) kanban
-2) schoolscout
-3) photobook
-4) homelab-home
-5) esrismells
+2) photobook
+3) homelab-home
+4) esrismells
 
 ### Phase 4: Cutover and rollback
 - final sync
