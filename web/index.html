@@ -660,14 +660,20 @@
 
   function probePill(result){
     if (result?.reason === 'no-published-port') return '<span class="pill warn">NO HOST PORT</span>';
-    if (result?.ok) return '<span class="pill good">PROBE OK</span>';
-    return '<span class="pill danger">PROBE COLD</span>';
+    if (result?.probeOk) return '<span class="pill good">ROUTE OK</span>';
+    if (result?.state === 'healthy') return '<span class="pill good">HEALTHY</span>';
+    if (result?.state === 'running') return '<span class="pill info">RUNNING</span>';
+    if (result?.reason === 'container-not-running') return '<span class="pill danger">STOPPED</span>';
+    return '<span class="pill danger">DOWN</span>';
   }
 
   function accessHint(result){
-    if (result?.reason === 'no-published-port') return 'No published host port; likely internal-only, dependency-only, or intentionally not exposed.';
-    if (result?.ok) return 'Route probe succeeded from the dashboard container context.';
-    return 'Route exists but probe was not fully verified from the dashboard container.';
+    if (result?.reason === 'no-published-port' && result?.ok) return 'Container is running; no host port is published, so this is an internal service.';
+    if (result?.reason === 'no-published-port') return 'No published host port and the container is not running.';
+    if (result?.reason === 'route-unverified') return 'Container is running. The Tailscale route cannot be hairpin-probed from this dashboard container.';
+    if (result?.probeOk) return 'Route probe succeeded from the dashboard container context.';
+    if (result?.state === 'healthy') return 'Container health check is passing.';
+    return 'The configured route is not responding.';
   }
 
   function makeUrl(result, service, fallbackHost){
@@ -725,7 +731,7 @@
     for (const svc of (j.services || [])) {
       const result = j.results?.[svc.key] || {};
       const label = result.reason === 'no-published-port' ? 'INTERNAL' : (result.host && result.host.startsWith('100.') ? 'TAILNET' : (result.host ? 'PUBLISHED PORT' : 'UNKNOWN'));
-      lines.push(`- ${svc.name} (${svc.containerName || svc.key}) ${label} ${result.host ? `${result.host}:${result.port}` : ''}`.trim());
+      lines.push(`- ${svc.name} (${svc.containerName || svc.key}) ${result.state || 'unknown'} ${label} ${result.host ? `${result.host}:${result.port}` : ''}`.trim());
     }
     lines.push('', 'Request: please help me fix what looks off.');
     return lines.join('\n');

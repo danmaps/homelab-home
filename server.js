@@ -162,6 +162,17 @@ async function getDockerServices() {
     const [name, portsRaw = ''] = row.split('|');
     const ports = parsePublishedPorts(portsRaw);
     const primary = ports.find((p) => p.hostPort && p.protocol === 'tcp') || null;
+    let state = 'running'; // docker ps only returns running containers
+    let health = 'none';
+    const inspected = await run('docker', ['inspect', name]);
+    if (inspected) {
+      try {
+        const dockerInfo = JSON.parse(inspected)[0] || {};
+        const dockerState = dockerInfo.State || {};
+        state = String(dockerState.Status || 'unknown');
+        health = dockerState.Health?.Status ? String(dockerState.Health.Status) : 'none';
+      } catch {}
+    }
     services.push({
       key: name,
       name,
@@ -174,6 +185,8 @@ async function getDockerServices() {
       source: 'docker',
       reachable: Boolean(primary),
       ports,
+      containerState: state,
+      health,
     });
   }
   return services;
@@ -214,7 +227,15 @@ app.get('/api/status', async (_req, res) => {
   const results = {};
   for (const s of services) {
     if (!s.port || !Number.isFinite(Number(s.port))) {
-      results[s.key] = { ok: false, reason: 'no-published-port' };
+      const running = s.source.includes('docker') && s.containerState === 'running';
+      const healthy = s.health === 'healthy';
+      results[s.key] = {
+        ok: running || healthy,
+        state: healthy ? 'healthy' : (running ? 'running' : 'internal'),
+        reason: running || healthy ? 'no-published-port' : 'container-not-running',
+        containerState: s.containerState,
+        health: s.health,
+      };
       continue;
     }
     const displayHost = s.hostIp || tailscaleHost;
@@ -222,7 +243,21 @@ app.get('/api/status', async (_req, res) => {
       ? 'host.docker.internal'
       : displayHost;
     const ok = await probePort(probeHost, Number(s.port));
-    results[s.key] = { ok, host: displayHost, port: Number(s.port) };
+    const running = s.source.includes('docker') && s.containerState === 'running';
+    const healthy = s.health === 'healthy';
+    const tailscaleRoute = displayHost.startsWith('100.');
+    results[s.key] = {
+      // Tailscale-bound services cannot reliably be hairpin-probed from this
+      // container. Docker state is the authoritative signal in that case.
+      ok: ok || healthy || (running && tailscaleRoute),
+      state: ok || healthy ? 'healthy' : (running && tailscaleRoute ? 'running' : 'down'),
+      host: displayHost,
+      port: Number(s.port),
+      probeOk: ok,
+      containerState: s.containerState,
+      health: s.health,
+      reason: !ok && running && tailscaleRoute ? 'route-unverified' : undefined,
+    };
   }
 
   res.json({
