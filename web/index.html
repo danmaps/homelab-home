@@ -651,6 +651,7 @@
 
   function accessPill(result){
     if (result?.reason === 'no-published-port') return '<span class="pill warn">INTERNAL</span>';
+    if (result?.reason === 'host-port-not-published') return '<span class="pill danger">PORT MISSING</span>';
     const host = result?.host || '';
     if (host.startsWith('100.')) return '<span class="pill good">TAILNET</span>';
     if (host === '0.0.0.0') return '<span class="pill info">PUBLISHED PORT</span>';
@@ -660,17 +661,23 @@
 
   function probePill(result){
     if (result?.reason === 'no-published-port') return '<span class="pill warn">NO HOST PORT</span>';
+    if (result?.reason === 'host-port-not-published') return '<span class="pill danger">PORT NOT PUBLISHED</span>';
     if (result?.probeOk) return '<span class="pill good">ROUTE OK</span>';
     if (result?.state === 'healthy') return '<span class="pill good">HEALTHY</span>';
+    if (result?.state === 'unverified') return '<span class="pill warn">UNVERIFIED</span>';
+    if (result?.state === 'container-running') return '<span class="pill warn">CONTAINER RUNNING</span>';
     if (result?.state === 'running') return '<span class="pill info">RUNNING</span>';
     if (result?.reason === 'container-not-running') return '<span class="pill danger">STOPPED</span>';
     return '<span class="pill danger">DOWN</span>';
   }
 
   function accessHint(result){
+    if (result?.reason === 'host-port-not-published') return result?.containerState === 'running'
+      ? 'Container is running, but its configured host port is not published. The service is not reachable at the advertised route.'
+      : 'The configured host port is not published and the container is not running.';
     if (result?.reason === 'no-published-port' && result?.ok) return 'Container is running; no host port is published, so this is an internal service.';
     if (result?.reason === 'no-published-port') return 'No published host port and the container is not running.';
-    if (result?.reason === 'route-unverified') return 'Container is running. The Tailscale route cannot be hairpin-probed from this dashboard container.';
+    if (result?.reason === 'route-unverified') return 'Container is running, but the Tailscale route cannot be hairpin-probed from this dashboard container.';
     if (result?.probeOk) return 'Route probe succeeded from the dashboard container context.';
     if (result?.state === 'healthy') return 'Container health check is passing.';
     return 'The configured route is not responding.';
@@ -730,7 +737,10 @@
     const lines = ['Homelab report', '', `App: ${location.origin}`, `Updated: ${j.updatedAt}`, ''];
     for (const svc of (j.services || [])) {
       const result = j.results?.[svc.key] || {};
-      const label = result.reason === 'no-published-port' ? 'INTERNAL' : (result.host && result.host.startsWith('100.') ? 'TAILNET' : (result.host ? 'PUBLISHED PORT' : 'UNKNOWN'));
+      const label = result.reason === 'host-port-not-published' ? 'PORT NOT PUBLISHED'
+        : (result.reason === 'no-published-port' ? 'INTERNAL'
+        : (result.reason === 'route-unverified' ? 'UNVERIFIED'
+        : (result.host && result.host.startsWith('100.') ? 'TAILNET' : (result.host ? 'PUBLISHED PORT' : 'UNKNOWN'))));
       lines.push(`- ${svc.name} (${svc.containerName || svc.key}) ${result.state || 'unknown'} ${label} ${result.host ? `${result.host}:${result.port}` : ''}`.trim());
     }
     lines.push('', 'Request: please help me fix what looks off.');
