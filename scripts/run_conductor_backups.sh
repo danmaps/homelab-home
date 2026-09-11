@@ -98,10 +98,17 @@ create_immich_dump() {
     fail "Immich PostgreSQL globals dump failed."
   fi
 
-  if ! docker exec -i "${IMMICH_CONTAINER}" pg_restore --list - < "${tmp_dump}" >/dev/null 2>&1; then
+  # pg_restore's list mode expects a filename in this PostgreSQL build; copy
+  # the dump into the matching Immich container rather than requiring a host
+  # PostgreSQL client package on a replacement machine.
+  local container_dump="/tmp/${filename}.dump"
+  if ! docker cp "${tmp_dump}" "${IMMICH_CONTAINER}:${container_dump}" >/dev/null 2>&1 || \
+      ! docker exec "${IMMICH_CONTAINER}" pg_restore --list "${container_dump}" >/dev/null 2>&1; then
+    docker exec "${IMMICH_CONTAINER}" rm -f "${container_dump}" >/dev/null 2>&1 || true
     rm -f "${tmp_dump}" "${tmp_globals}"
     fail "Immich dump verification failed."
   fi
+  docker exec "${IMMICH_CONTAINER}" rm -f "${container_dump}" >/dev/null 2>&1 || true
 
   chmod 600 "${tmp_dump}" "${tmp_globals}"
   mv -f "${tmp_dump}" "${IMMICH_DUMP_DIR}/${filename}.dump"
