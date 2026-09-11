@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Conductor backup daily at 04:00
+
+[Timer]
+OnCalendar=*-*-* 04:00:00
+Persistent=true
+Unit=conductor-backup.service
+
+[Install]
+WantedBy=timers.target
