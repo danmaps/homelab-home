@@ -1,0 +1,8 @@
+[Unit]
+Description=Portable Conductor and Immich database backup
+Wants=network-online.target docker.service
+After=network-online.target docker.service mnt-seagate\x2dportable\x2d2tb.mount mnt-seagate\x2dexpansion\x2ddrive.mount
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/run_conductor_backups.sh

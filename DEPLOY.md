@@ -8,6 +8,13 @@ cd /home/openclaw/.openclaw/workspace/homelab-home
 bash deploy-pull.sh
 ```
 
+## Product packaging
+
+The paid-product packaging flow is server-owned and runs independently of
+this dashboard container. See [docs/ci-cd-plans.md](docs/ci-cd-plans.md) for
+the cron trigger, package outputs, repository contract, and verification
+steps.
+
 ## Auto-deploy (cron)
 Add to `crontab -e`:
 ```
