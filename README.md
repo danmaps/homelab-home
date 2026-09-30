@@ -19,6 +19,14 @@ Instead of pretending to be a full uptime monitor, homelab-home is meant to answ
 - lets you open or inline-preview reachable services
 - can still use optional config metadata for repo links and naming overrides
 
+## Current network topology
+
+![Conductor home lab network topology](docs/network-topology.svg)
+
+The diagram is a compact snapshot of the Tailscale clients, Conductor host,
+user-facing services, and internal data plane. The service index remains the
+source of truth for current ports and reachability.
+
 ## What it is not
 
 homelab-home is **not** a strict public uptime monitor.
