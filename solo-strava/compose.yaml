@@ -1,0 +1,17 @@
+services:
+  solo-strava:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${SOLO_BIND_IP:-127.0.0.1}:8787:8787"
+    volumes:
+      - solo_data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  solo_data:
