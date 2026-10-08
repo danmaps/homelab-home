@@ -1,17 +1,15 @@
+# Linux home-lab only. Host networking keeps the downstream PulsHealth APIs
+# on localhost and requires no new published container port.
 services:
-  solo-strava:
-    build: .
-    restart: unless-stopped
+  atlas:
+    build: ./atlas
+    network_mode: host
     env_file: .env
-    ports:
-      - "${SOLO_BIND_IP:-127.0.0.1}:8787:8787"
-    volumes:
-      - solo_data:/data
+    restart: unless-stopped
     read_only: true
-    tmpfs:
-      - /tmp
     security_opt:
       - no-new-privileges:true
-
-volumes:
-  solo_data:
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:mode=1777
