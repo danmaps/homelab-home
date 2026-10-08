@@ -23,10 +23,10 @@ function value(obj,...keys){for(const k of keys){const v=obj?.[k];if(v!==undefin
 function list(payload){if(Array.isArray(payload))return payload;for(const k of ['workouts','items','data','results'])if(Array.isArray(payload?.[k]))return payload[k];return []}
 function stamp(t){if(!t)return null;const n=Number(t);return Number.isFinite(n)&&n>1e11?new Date(n):Number.isFinite(n)&&n>1e9?new Date(n*1000):new Date(t)}
 function niceDate(t){const d=stamp(t);return d&&!isNaN(d)?new Intl.DateTimeFormat(undefined,{dateStyle:'medium',timeStyle:'short'}).format(d):'Recorded workout'}
-function num(n){const x=Number(n);return Number.isFinite(x)?x:null}
+function num(n){if(n===null||n===undefined||n==='')return null;const x=Number(n);return Number.isFinite(x)?x:null}
 function sec(w){let n=num(value(w,'durationS','duration_s','durationSec','duration'));if(n!==null&&n>0)return n;const a=stamp(value(w,'start','startTs','start_ts','startDate'));const b=stamp(value(w,'end','endTs','end_ts','endDate'));return a&&b?(b-a)/1000:null}
 function miles(m){return num(m)!==null?(num(m)/1609.344).toFixed(2)+' mi':'—'}
-function metric(w){const dist=num(value(w,'distanceM','distance_m','distanceMeters','distance'));const dur=sec(w),en=num(value(w,'energyKcal','energy_kcal','activeEnergyKcal'));$('distance').textContent=miles(dist);$('duration').textContent=dur?Math.round(dur/60)+' min':'—';$('pace').textContent=dist&&dur?(Math.round((dur/(dist/1609.344))*10)/10).toFixed(1)+' min/mi':'—';$('energy').textContent=en!==null?Math.round(en)+' kcal':'—'}
+function metric(w){const dist=num(value(w,'distanceM','distance_m','distanceMeters','distance'));const dur=sec(w),en=num(value(w,'energyKcal','energy_kcal','activeEnergyKcal'));$('distance').textContent=miles(dist);$('duration').textContent=dur?Math.round(dur/60)+' min':'—';const ps=dist&&dur?Math.round(dur/(dist/1609.344)):null;$('pace').textContent=ps!==null?Math.floor(ps/60)+':'+String(ps%60).padStart(2,'0')+'/mi':'—';$('energy').textContent=en!==null?Math.round(en)+' kcal':'—'}
 function idOf(w){return value(w,'uuid','id','workoutUuid','workoutUUID')}
 function pointRows(route){
   // PulsHealth's route endpoint may wrap the ordered points in data/route/points.
