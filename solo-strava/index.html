@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Solo Strava | Private workout atlas</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous">
+<style>body{background:#0e1825;color:#e5f1f5;font:15px system-ui,sans-serif;margin:0}header{padding:26px max(20px,calc((100vw - 1100px)/2));border-bottom:1px solid #314457}h1{margin:0;font-size:28px}small,.muted{color:#95afbe}.shell{max-width:1100px;margin:24px auto;padding:0 16px}.metrics{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}.metric{background:#1b2a3c;border:1px solid #34485d;border-radius:10px;min-width:130px;padding:14px}.metric strong{display:block;font-size:24px;margin-top:3px}#map{height:460px;border-radius:12px;background:#1d3340}.layout{display:grid;grid-template-columns:1fr 1fr;gap:22px}.panel{padding:16px;background:#182638;border:1px solid #34485d;border-radius:12px}.items{max-height:460px;overflow:auto}.workout{display:block;width:100%;padding:12px;margin:6px 0;background:#223447;color:#ecf8ff;text-align:left;border:1px solid #486078;border-radius:8px;cursor:pointer}.workout:hover,.workout.active{background:#28515b;border-color:#4ac5ae}#message{margin:15px 0}footer{padding:20px;color:#9fbdc7;font-size:12px}@media(max-width:700px){.layout{grid-template-columns:1fr}#map{height:400px}}</style></head>
+<body><header><h1>Solo Strava <small>↗ private workout atlas</small></h1><p class="muted">Your routes. Your history. No feed, no followers.</p></header>
+<main class="shell"><section class="metrics" id="stats"></section><section class="layout"><div><div id="map"></div><p class="muted" style="font-size:12px">Basemap tiles load from OpenStreetMap. Your route coordinates may be visible to the tile provider.</p></div><div class="panel"><h2>Workouts</h2><p id="message" class="muted">Loading…</p><div class="items" id="items"></div></div></section></main>
+<footer class="shell">Private by default · Apple Health workout route import · self-hosted</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script><script>
+(async()=>{
+ const message=document.getElementById('message'), items=document.getElementById('items'), stats=document.getElementById('stats');
+ try{
+   const resp=await fetch('/api/workouts/geo');if(!resp.ok)throw Error('Cannot load workouts ('+resp.status+')');
+   const {workouts}=await resp.json();
+   const totalKm=workouts.reduce((n,w)=>n+(w.distance_m||0)/1000,0);
+   for(const [label,value] of [['Workouts',workouts.length],['Distance',(totalKm/1.609344).toFixed(1)+' mi'],['Mapped',workouts.filter(w=>w.route.length).length]]){
+     const el=document.createElement('div');el.className='metric';const small=document.createElement('small');small.textContent=label;const strong=document.createElement('strong');strong.textContent=value;el.append(small,strong);stats.append(el);
+   }
+   const map=L.map('map').setView([34.05,-117.17],12);
+   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(map);
+   let routeLine;
+   function show(w,button){
+     document.querySelectorAll('.workout').forEach(x=>x.classList.toggle('active',x===button));
+     if(routeLine)map.removeLayer(routeLine);
+     if(w.route.length){routeLine=L.polyline(w.route.map(p=>[p.lat,p.lon]),{color:'#28c5aa',weight:5}).addTo(map);map.fitBounds(routeLine.getBounds(),{padding:[20,20]})}
+     else message.textContent='This workout has no GPS route; it is still in your workout history.';
+   }
+   message.textContent=workouts.length?'Select a workout to see its route.':'No workouts ingested yet. Configure Health Auto Export.';
+   workouts.forEach((w,i)=>{const b=document.createElement('button');b.className='workout';
+     const dist=w.distance_m? (w.distance_m/1609.344).toFixed(2)+' mi':'distance unavailable';
+     const when=w.start.slice(0,10);
+     b.textContent=`${w.name} · ${dist} · ${when}${w.route.length?' · GPS':''}`;
+     b.addEventListener('click',()=>show(w,b));items.append(b);
+     if(w.route.length){const links=document.createElement('div');links.style.padding='0 12px 12px';
+       for(const ext of ['gpx','geojson']){const a=document.createElement('a');a.href='/api/workouts/'+encodeURIComponent(w.id)+'.'+ext;a.textContent='Download '+ext.toUpperCase()+'  ';a.style.color='#5bdfc3';a.style.marginRight='12px';links.append(a)}items.append(links)}
+     if(i===0)show(w,b);
+   });
+ }catch(e){message.textContent=e.message;}
+})();
+</script></body></html>
