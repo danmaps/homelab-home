@@ -6,3 +6,5 @@ config.local.json
 config.json
 config.local.json
 *.log
+audit-evidence/
+__pycache__/

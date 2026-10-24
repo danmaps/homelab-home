@@ -1,6 +1,7 @@
 services:
   homelab-home:
     build: .
+    image: homelab-home:local
     container_name: homelab-home
     ports:
       - "100.87.16.33:3499:3499"
