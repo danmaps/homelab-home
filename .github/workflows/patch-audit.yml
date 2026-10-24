@@ -1,0 +1,31 @@
+name: Runtime and audit checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s scripts -p 'test_audit_conductor.py' -v
+      - run: bash -n deploy-pull.sh
+      - name: Fresh dashboard build and runtime check
+        run: |
+          docker build --pull --no-cache -t homelab-home:ci .
+          docker run --rm homelab-home:ci node -e 'const [a,b,c]=process.versions.node.split(".").map(Number); if(a!==24 || b<22 || (b===22 && c<1)) process.exit(1); console.log(process.versions.node)'
+      - name: Dashboard HTTP smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          trap 'docker logs homelab-smoke; docker rm -f homelab-smoke' EXIT
+          docker run -d --name homelab-smoke -p 127.0.0.1:3499:3499 homelab-home:ci
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:3499/api/status > /tmp/status.json; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3499/api/status > /tmp/status.json
+          python -c 'import json; d=json.load(open("/tmp/status.json")); assert isinstance(d["services"], list)'

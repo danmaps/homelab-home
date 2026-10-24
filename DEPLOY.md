@@ -1,5 +1,9 @@
 # Deploy: homelab-home
 
+For a fresh base rebuild, use `FRESH_BASE=1 bash deploy-pull.sh`.
+See [Conductor patch audit](docs/patch-week-2026-10.md) for the runtime/container
+inventory, certificate checks, image verification and per-service deployment steps.
+
 This host uses **docker-compose** (not `docker compose`).
 
 ## Manual deploy

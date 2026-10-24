@@ -1,10 +1,10 @@
-FROM node:20-alpine
+FROM node:24.22.1-alpine
 
-RUN apk add --no-cache docker-cli
+RUN apk add --no-cache --upgrade docker-cli ca-certificates
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 COPY . .
 
 ENV PORT=3499
