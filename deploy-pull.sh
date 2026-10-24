@@ -9,12 +9,12 @@ git pull --ff-only
 
 # Build and recreate only the dashboard, preserving its configured binding.
 if [[ "${FRESH_BASE:-0}" == "1" ]]; then
-  docker-compose build --pull --no-cache homelab-home
+  docker compose build --pull --no-cache homelab-home
 else
-  docker-compose build homelab-home
+  docker compose build homelab-home
 fi
 expected_image=$(docker image inspect --format '{{.Id}}' homelab-home:local)
-docker-compose up -d --no-build --force-recreate homelab-home
+docker compose up -d --no-build --force-recreate homelab-home
 test "$(docker inspect --format '{{.Image}}' homelab-home)" = "$expected_image"
 docker exec homelab-home node -e 'const [major,minor,patch]=process.versions.node.split(".").map(Number); if(major!==24 || minor<22 || (minor===22 && patch<1)) process.exit(1); console.log(process.versions.node)'
 echo "Verified running image: $expected_image"
