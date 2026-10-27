@@ -104,3 +104,9 @@ Highlights:
 - This does not expose anything new to the internet by itself.
 - The dashboard is most useful as a jump page and operator index.
 - If something looks wrong, treat the labels as hints about access patterns, not absolute truth about public availability.
+
+## GitHub briefing collector (manual local slice)
+
+A read-only Python collector and focused tests live under `scripts/`.
+See [the contract, manual validation path, and rollout gates](docs/github-briefing-collector.md).
+This does not install a scheduler or change briefing delivery.
