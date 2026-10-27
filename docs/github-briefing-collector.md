@@ -22,29 +22,37 @@ Run as the existing briefing user on Linux Conductor, with Python 3.9+ and the
 existing authenticated GitHub CLI installation. Do not copy credentials or add
 scopes. Check `gh auth status` locally without retaining its output. All API
 requests explicitly target github.com and are reads (GraphQL uses POST only for
-queries). No third-party Python packages are needed. Execution is sequential,
-so concurrent API requests are bounded at one.
+queries). No third-party Python packages are needed. Repository concurrency is
+bounded by the `--workers` setting.
 
 ```bash
 python3 -m unittest discover -s scripts -p 'test_collect_github_briefing.py' -v
 python3 scripts/collect_github_briefing.py \
   --end 2026-10-26T14:03:11Z \
-  --output "$HOME/.local/state/github-briefing/2026-10-26T140311Z.json"
+  --output "$HOME/.local/state/github-briefing/2026-10-26T140311Z.json" \
+  --workers 4 --runtime-budget 300
 ```
 
 Omit `--end` to capture one UTC end timestamp and derive the preceding 24 hours.
+`--workers` bounds repository concurrency and `--runtime-budget` bounds the
+whole run. Add `--resume` with the same end timestamp and output path to reuse
+completed repositories; partial repositories are retried.
 Exit 0 means the queries completed **within documented coverage limits**, not
 that the implementation meets every issue acceptance criterion. Exit 2 means
 one or more queries failed or truncated, and the JSON must be retained with its
 partial status. Unexpected process termination leaves the prior artifact intact.
 Do not use `set -e` to discard the partial artifact before inspecting exit 2.
 
-The output file is mode 0600, written through a unique temporary file and atomic
-replacement in the same directory. The collector never appends events or sends
-notifications. Rerunning with the same end and output path replaces that window;
-current observations may change. Concurrent reruns use last-completed-writer wins;
-avoid overlapping manual runs when comparing evidence. Parent directory access
-follows the existing user's policy. Keep artifacts outside the web-served repo.
+The initial partial artifact is written before the first API call. After each
+repository completes, the artifact is replaced atomically, so interruption
+leaves the last usable scope/results/checkpoint. The output file is mode 0600,
+written through a unique temporary file in the same directory. Each query and
+repository records an observation timestamp; each query also records elapsed
+seconds and API-call count (including retry attempts). The collector never
+appends events or sends notifications. Concurrent reruns use last-completed-
+writer wins; avoid overlapping manual runs when comparing evidence. Parent
+directory access follows the existing user's policy. Keep artifacts outside the
+web-served repo.
 Suggested retention for validation is 14 daily artifacts; this script performs
 no pruning, deletion, or retention configuration.
 
@@ -64,8 +72,12 @@ no pruning, deletion, or retention configuration.
 
 Each repository has `repository_id`, `name`, `status`, `activity`, `commits`,
 `ci_attempts`, `current_unfinished_evidence`, and `queries`. Each query records
-its name and status, with sanitized reason codes for failures, and pages/items
-for list queries. A failed second page retains the first page and marks partial.
+its name and status, with sanitized reason codes for failures, pages/items for
+list queries, observation time, elapsed seconds, and API-call count. A failed
+second page retains the first page and marks partial. Runtime expiry is
+recorded as `runtime_budget_exceeded`; `unfinished_queries` names repositories
+not completed before the budget. `counts` separates partial and skipped
+queries.
 Empty complete lists differ from unavailable, access denied, unauthenticated,
 rate limited, invalid response, truncated, and transport failures. A failed scope
 query means the repository count is incomplete, even if other repos succeeded.
@@ -98,7 +110,9 @@ contribution visibility/history restrictions still apply. The reported baseline
 188 is a comparison target, never a list or a cap.
 
 Every branch and every available PR history is queried for commits, including
-fork/closed PR histories. PR histories reaching GitHub's 250-commit ceiling are
+fork/closed PR histories, except an open PR branch whose current head SHA
+exactly matches the PR head: its PR history is reused and the skipped query is
+recorded. PR histories reaching GitHub's 250-commit ceiling are
 explicitly partial. Detached/deleted branches without available histories and
 unreachable commits cannot be recovered. Committer dates are not push dates.
 PR/issue list timestamps preserve latest opened/merged/closed state only; repeated
@@ -130,9 +144,19 @@ or savings estimate follows from deterministic serialization.
 The command above fixes the requested exact window, October 25 14:03:11 UTC
 inclusive through October 26 14:03:11 UTC exclusive. The local fixture suite
 covers these boundaries but is synthetic, not retained production evidence.
-No actual briefing artifact for that window was retrievable during this work;
-no live Conductor collection, scope-parity check, performance measurement, or
-delivery validation has been completed.
+The exact probe was run on Conductor with four workers and a 300-second budget.
+The first pass discovered 542 repositories, checkpointed 89 completed
+repositories, and produced a 455,502-byte mode-0600 partial artifact. A same-
+window resume reused completed repository results and finished with all 542
+repositories represented, 112 complete-with-documented-limits and 430 partial,
+4,231 partial queries, 32 skipped history queries, and a 1,683,578-byte mode-
+0600 artifact. The measured wall time was 314 seconds because in-flight API
+requests can finish after the budget boundary. Across 7,145 recorded queries,
+2,988 API calls consumed 1,707.33 summed query-seconds; the slowest observed
+query was a rate-limited workflow-run scan. These are collection measurements,
+not summary-token or quota measurements. No scope-parity or delivery validation
+has been completed; the observed 542-repository scope differs from the old 188
+baseline and requires explanation.
 
 Before any cutover:
 

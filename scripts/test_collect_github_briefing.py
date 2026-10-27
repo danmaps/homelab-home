@@ -25,6 +25,60 @@ class Fake:
 
 
 class CollectorTests(unittest.TestCase):
+    def test_query_records_timing_and_api_calls(self):
+        api = Fake([[]])
+        c = m.Collector(api, END)
+        self.assertEqual(c.pages('timed', 'endpoint'), [])
+        query = c.queries[0]
+        self.assertEqual(query['api_calls'], 1)
+        self.assertGreaterEqual(query['elapsed_seconds'], 0)
+        self.assertRegex(query['observed_at'], r'Z$')
+
+    def test_initial_artifact_survives_interruption(self):
+        class Interrupted(Fake):
+            def request(self, endpoint, **kwargs):
+                raise KeyboardInterrupt
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'artifact.json'
+            with self.assertRaises(KeyboardInterrupt):
+                m.Collector(Interrupted([]), END, observed=END).collect(path)
+            artifact = json.loads(path.read_text())
+            self.assertEqual(artifact['window']['end'], END)
+            self.assertEqual(artifact['status'], 'partial')
+            self.assertEqual(artifact['counts']['completed_repositories'], 0)
+
+    def test_same_window_resume_skips_completed_repository(self):
+        repo = {'id': 1, 'full_name': 'a/b', 'html_url': 'https://github.com/a/b', 'default_branch': 'main'}
+
+        class Dynamic:
+            def __init__(self):
+                self.calls = []
+            def request(self, endpoint, **kwargs):
+                self.calls.append(endpoint)
+                if endpoint == 'user':
+                    return {'login': 'danmaps'}
+                if endpoint.startswith('user/repos'):
+                    return [repo]
+                if endpoint == 'graphql':
+                    return {'data': {'viewer': {'repositoriesContributedTo': {'nodes': [], 'pageInfo': {'hasNextPage': False}}}}}
+                if '/pulls' in endpoint or '/issues' in endpoint or '/branches' in endpoint:
+                    return []
+                if '/actions/runs' in endpoint:
+                    return {'workflow_runs': []}
+                raise AssertionError(endpoint)
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'artifact.json'
+            api = Dynamic()
+            first = m.Collector(api, END, observed=END, max_workers=1).collect(path)
+            first_calls = len(api.calls)
+            self.assertEqual(first['counts']['completed_repositories'], 1)
+            api.calls.clear()
+            resumed = m.Collector(api, END, observed=END, max_workers=1).collect(path, first)
+            self.assertEqual(resumed['counts']['completed_repositories'], 1)
+            self.assertEqual(api.calls, ['user', 'user/repos?affiliation=owner%2Ccollaborator%2Corganization_member&per_page=100&page=1', 'graphql'])
+            self.assertGreater(first_calls, len(api.calls))
+
     def test_exact_window_and_offsets(self):
         c = m.Collector(None, END)
         self.assertFalse(c.inside('2026-10-25T14:03:10Z'))
