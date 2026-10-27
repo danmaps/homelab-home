@@ -105,9 +105,11 @@ REST lists request 100/page until a short page, including an empty terminal page
 for exact multiples. GraphQL contribution discovery follows end cursors. A
 1,000-page per-query safety bound reports `truncated` rather than success.
 GraphQL cursor stalls and error responses explicitly fail. Scope uses both
-`user/repos` affiliations and viewer `repositoriesContributedTo`; GitHub's
-contribution visibility/history restrictions still apply. The reported baseline
-188 is a comparison target, never a list or a cap.
+`user/repos` owner/collaborator affiliations and viewer
+`repositoriesContributedTo`; all `EdisonInternational/*` repositories are
+excluded by explicit scope policy. GitHub's contribution visibility/history
+restrictions still apply. The reported baseline 188 is a comparison target,
+never a list or a cap.
 
 Every branch and every available PR history is queried for commits, including
 fork/closed PR histories, except an open PR branch whose current head SHA
@@ -144,19 +146,17 @@ or savings estimate follows from deterministic serialization.
 The command above fixes the requested exact window, October 25 14:03:11 UTC
 inclusive through October 26 14:03:11 UTC exclusive. The local fixture suite
 covers these boundaries but is synthetic, not retained production evidence.
-The exact probe was run on Conductor with four workers and a 300-second budget.
-The first pass discovered 542 repositories, checkpointed 89 completed
-repositories, and produced a 455,502-byte mode-0600 partial artifact. A same-
-window resume reused completed repository results and finished with all 542
-repositories represented, 112 complete-with-documented-limits and 430 partial,
-4,231 partial queries, 32 skipped history queries, and a 1,683,578-byte mode-
-0600 artifact. The measured wall time was 314 seconds because in-flight API
-requests can finish after the budget boundary. Across 7,145 recorded queries,
-2,988 API calls consumed 1,707.33 summed query-seconds; the slowest observed
-query was a rate-limited workflow-run scan. These are collection measurements,
-not summary-token or quota measurements. No scope-parity or delivery validation
-has been completed; the observed 542-repository scope differs from the old 188
-baseline and requires explanation.
+The exact probe was rerun on Conductor with four workers and a 300-second
+budget after excluding `EdisonInternational/*`. It discovered 145 repositories
+(131 owned by `danmaps` and 14 under other owners), checkpointed 83 completed
+repositories, and produced a 295,588-byte mode-0600 partial artifact. Sixty-two
+repositories remained unfinished for resume; zero Edison repositories were
+included. The measured wall time was 301 seconds because in-flight API
+requests can finish after the budget boundary. The prior 542-repository probe
+was intentionally invalidated because it included the broad organization-member
+universe. These are collection measurements, not summary-token or quota
+measurements. Scope parity against the old 188 baseline and delivery
+validation remain outstanding.
 
 Before any cutover:
 

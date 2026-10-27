@@ -171,7 +171,7 @@ class Collector:
             return None
 
     def scope(self):
-        repos = self.pages('scope:affiliations', 'user/repos', params={'affiliation': 'owner,collaborator,organization_member'})
+        repos = self.pages('scope:affiliations', 'user/repos', params={'affiliation': 'owner,collaborator'})
         record = {'query': 'scope:contributions', 'status': 'complete', 'pages': 0}
         self.queries.append(record)
         started = time.monotonic()
@@ -186,7 +186,8 @@ class Collector:
                 calls += request_calls
                 data = raw['data']['viewer']['repositoriesContributedTo']
                 for r in data['nodes']:
-                    repos.append({'id': r['databaseId'], 'full_name': r['nameWithOwner'], 'html_url': r['url'], 'default_branch': (r['defaultBranchRef'] or {}).get('name')})
+                    if r['nameWithOwner'].split('/', 1)[0] != 'EdisonInternational':
+                        repos.append({'id': r['databaseId'], 'full_name': r['nameWithOwner'], 'html_url': r['url'], 'default_branch': (r['defaultBranchRef'] or {}).get('name')})
                 record['pages'] = page + 1
                 if not data['pageInfo']['hasNextPage']:
                     break
@@ -199,7 +200,7 @@ class Collector:
         except (Failure, KeyError, TypeError) as exc:
             record.update(status='partial', reason=exc.kind if isinstance(exc, Failure) else 'invalid_response')
         self._finish_query(record, started, calls)
-        return unique([{'id': r['id'], 'name': r['full_name'], 'url': r['html_url'], 'default_branch': r.get('default_branch')} for r in repos], lambda r: str(r['id']))
+        return unique([{'id': r['id'], 'name': r['full_name'], 'url': r['html_url'], 'default_branch': r.get('default_branch')} for r in repos if r['full_name'].split('/', 1)[0] != 'EdisonInternational'], lambda r: str(r['id']))
 
     def repository(self, repo, login):
         start_query = len(self.queries)

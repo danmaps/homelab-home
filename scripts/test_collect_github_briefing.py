@@ -76,7 +76,7 @@ class CollectorTests(unittest.TestCase):
             api.calls.clear()
             resumed = m.Collector(api, END, observed=END, max_workers=1).collect(path, first)
             self.assertEqual(resumed['counts']['completed_repositories'], 1)
-            self.assertEqual(api.calls, ['user', 'user/repos?affiliation=owner%2Ccollaborator%2Corganization_member&per_page=100&page=1', 'graphql'])
+            self.assertEqual(api.calls, ['user', 'user/repos?affiliation=owner%2Ccollaborator&per_page=100&page=1', 'graphql'])
             self.assertGreater(first_calls, len(api.calls))
 
     def test_exact_window_and_offsets(self):
@@ -115,6 +115,11 @@ class CollectorTests(unittest.TestCase):
         c = m.Collector(api, END)
         self.assertEqual(len(c.scope()), 2)
         self.assertIn('after:"next"', api.calls[-1][1]['graphql'])
+
+    def test_scope_excludes_edison_organization(self):
+        graph = {'data': {'viewer': {'repositoriesContributedTo': {'nodes': [{'databaseId': 2, 'nameWithOwner': 'EdisonInternational/hidden', 'url': 'https://github.com/EdisonInternational/hidden', 'defaultBranchRef': {'name': 'main'}}], 'pageInfo': {'hasNextPage': False}}}}}
+        api = Fake([[{'id': 1, 'full_name': 'EdisonInternational/hidden', 'html_url': 'https://github.com/EdisonInternational/hidden', 'default_branch': 'main'}, {'id': 3, 'full_name': 'danmaps/kept', 'html_url': 'https://github.com/danmaps/kept', 'default_branch': 'main'}], graph])
+        self.assertEqual([r['name'] for r in m.Collector(api, END).scope()], ['danmaps/kept'])
 
     def test_repository_commits_across_sources_and_current_backlog(self):
         commit = {'sha': 'abc', 'html_url': 'https://github.com/a/b/commit/abc', 'commit': {'committer': {'date': '2026-10-25T14:03:11Z'}, 'message': 'hello\nbody'}}
