@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "title": "The Household Gazette",
+  "timezone": "Etc/UTC",
+  "paper": "Letter",
+  "allow_partial": true,
+  "artwork": {"mode": "none"},
+  "privacy": {"exclude": ["credentials", "street addresses", "account numbers"], "medical_labels": "neutral"},
+  "sources": [
+    {"id": "calendar", "required": true, "max_age_minutes": 60, "coverage": "selective", "page_ids": ["today", "tomorrow"]},
+    {"id": "community", "required": true, "max_age_minutes": 1440, "coverage": "all_topics", "page_ids": ["reading"]}
+  ],
+  "sections": [
+    {"id": "today", "title": "Today"},
+    {"id": "tomorrow", "title": "Tomorrow", "window": "tomorrow"},
+    {"id": "reading", "title": "The Reading Room"}
+  ],
+  "delivery": {"channel": "local_pdf", "recipients": []},
+  "printing": {"enabled": false},
+  "schedule": {"enabled": false}
+}

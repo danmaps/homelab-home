@@ -1,0 +1,645 @@
+{
+  "schema_version": 1,
+  "mode": "demo",
+  "title": "The Household Gazette",
+  "date": "2026-10-24",
+  "timezone": "Etc/UTC",
+  "as_of": "2026-10-24T07:15:00+00:00",
+  "pages": [
+    {
+      "id": "today",
+      "deck": "A fictional example of the today desk.",
+      "articles": [
+        {
+          "headline": "A little room for the river",
+          "paragraphs": [
+            "The example household has a walk penciled in for 10 a.m. The calendar entry is invented for this sample.",
+            "The newspaper brings the day into focus with readable summaries, dated plans and visible attribution. None of these example events should be treated as an invitation."
+          ],
+          "source_ids": [
+            "calendar:walk"
+          ],
+          "fact_ids": [
+            "walk"
+          ]
+        }
+      ],
+      "front_week": {
+        "start_date": "2026-10-18",
+        "end_date": "2026-10-25",
+        "items": [
+          {
+            "event_date": "2026-10-24",
+            "title": "A river walk",
+            "body": "10 a.m.; fictional.",
+            "source_ids": [
+              "calendar:walk"
+            ]
+          },
+          {
+            "event_date": "2026-10-25",
+            "title": "Library afternoon",
+            "body": "2 p.m.; fictional.",
+            "source_ids": [
+              "calendar:library"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "tomorrow",
+      "deck": "A fictional example of the tomorrow desk.",
+      "articles": [
+        {
+          "headline": "An afternoon among the shelves",
+          "paragraphs": [
+            "This invented calendar entry demonstrates a planning item inside the inclusive local date window.",
+            "A live paper would check the actual event, cancellation state and preparation before describing it as a commitment."
+          ],
+          "source_ids": [
+            "calendar:library"
+          ],
+          "fact_ids": [
+            "tomorrow"
+          ],
+          "event_date": "2026-10-25",
+          "audience": "general"
+        }
+      ],
+      "start_date": "2026-10-25",
+      "end_date": "2026-10-25"
+    },
+    {
+      "id": "week",
+      "deck": "A fictional example of the next seven days desk.",
+      "articles": [
+        {
+          "headline": "A conversation about next season",
+          "paragraphs": [
+            "This invented calendar entry demonstrates a planning item inside the inclusive local date window.",
+            "A live paper would check the actual event, cancellation state and preparation before describing it as a commitment."
+          ],
+          "source_ids": [
+            "calendar:planning"
+          ],
+          "fact_ids": [
+            "week"
+          ],
+          "event_date": "2026-10-27",
+          "audience": "general"
+        }
+      ],
+      "start_date": "2026-10-24",
+      "end_date": "2026-10-30"
+    },
+    {
+      "id": "month",
+      "deck": "A fictional example of the next 30 days desk.",
+      "articles": [
+        {
+          "headline": "Keep an eye on the telescope",
+          "paragraphs": [
+            "This invented calendar entry demonstrates a planning item inside the inclusive local date window.",
+            "A live paper would check the actual event, cancellation state and preparation before describing it as a commitment."
+          ],
+          "source_ids": [
+            "calendar:telescope"
+          ],
+          "fact_ids": [
+            "month"
+          ],
+          "event_date": "2026-11-10",
+          "audience": "general"
+        }
+      ],
+      "start_date": "2026-10-24",
+      "end_date": "2026-11-22"
+    },
+    {
+      "id": "family-1",
+      "deck": "A fictional example of the the family desk desk.",
+      "articles": [
+        {
+          "headline": "At the shared table",
+          "paragraphs": [
+            "The fictional Monday menu offers vegetable pasta or a bean wrap. Menu publication dates would remain visible in a live edition.",
+            "Shared school information belongs on this family desk so it need not be repeated on every child page."
+          ],
+          "source_ids": [
+            "shared:lunch"
+          ],
+          "fact_ids": [
+            "lunch"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "family-2",
+      "deck": "A fictional example of the the family desk desk.",
+      "articles": [
+        {
+          "headline": "An evening with the stars",
+          "paragraphs": [
+            "A fictional astronomy club offers an observing session. It is an opportunity, rather than a claim that someone has registered.",
+            "A real edition would check the organizer, eligibility, dates and available places before describing the opportunity as current."
+          ],
+          "source_ids": [
+            "shared:club"
+          ],
+          "fact_ids": [
+            "club"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jules-1",
+      "deck": "A fictional example of the jules desk.",
+      "articles": [
+        {
+          "headline": "The latest published marks",
+          "paragraphs": [
+            "These invented grade rows retain the exact course, mark, percentage and term from the fictional snapshot."
+          ],
+          "source_ids": [
+            "school:math",
+            "school:science"
+          ],
+          "fact_ids": [
+            "grades"
+          ],
+          "grade_ids": [
+            "school:math",
+            "school:science"
+          ]
+        },
+        {
+          "headline": "Everything still on the TODO list",
+          "paragraphs": [
+            "The example includes an undated item and its nested subtask. Nothing is completed or rescheduled by newspaper collection."
+          ],
+          "source_ids": [
+            "tasks:jules-books",
+            "tasks:jules-card"
+          ],
+          "fact_ids": [
+            "child-tasks"
+          ],
+          "task_ids": [
+            "tasks:jules-books",
+            "tasks:jules-card"
+          ]
+        }
+      ],
+      "image": {
+        "path": "demo-art/comic.png",
+        "alt": "A fictional child measures a seedling while a cat raises a much taller tail.",
+        "origin": "generated",
+        "generated_for_date": "2026-10-24",
+        "generation_evidence": {
+          "tool": "built-in image_gen",
+          "reference": "demo-art/prompts.json#comic",
+          "prompt": "Use case: illustration-story. Asset type: one wide newspaper comic strip, three equal side-by-side panels in a single raster image, wide 3:1 composition. Create a fictional short-haired school-age child wearing a teal top, otherwise all black, white and neutral grayscale; no real-person reference. Clear simple black line art on clean white paper, gentle visual humor suitable for upper elementary and middle school. Panel 1: child arranges three small pots on a sunny windowsill and proudly points to one tiny seedling. Panel 2: an ordinary grayscale cat curls up next to the pots; child carefully measures the seedling with a blank ruler. Panel 3: cat raises its tail straight up beside the seedling and the child looks at the towering tail with a surprised but amused expression. Natural proportions, kindness, no ridicule. No text, letters, numbers, captions, balloons, logos or watermarks. Thin panel borders. Leave no caption area inside art; captions will be typeset separately in HTML."
+        }
+      },
+      "comic": {
+        "premise": "The cat has its own idea of impressive plant growth.",
+        "cast_ids": [
+          "jules"
+        ],
+        "reference_ids": [
+          "fictional-child-reference"
+        ],
+        "captions": [
+          "A promising start.",
+          "Time to measure the progress.",
+          "The competition is growing."
+        ]
+      }
+    },
+    {
+      "id": "jules-2",
+      "deck": "A fictional example of the jules desk.",
+      "articles": [
+        {
+          "headline": "In the current school quarter",
+          "paragraphs": [
+            "The leaf sketch is unscored; that is distinct from missing, completed late or closed work. Previous-quarter assignments stay out of the paper."
+          ],
+          "source_ids": [
+            "school:sketch"
+          ],
+          "fact_ids": [
+            "assignments"
+          ],
+          "assignment_ids": [
+            "school:sketch"
+          ]
+        }
+      ],
+      "image": {
+        "path": "demo-art/lesson.png",
+        "alt": "Four numbered stages for a seated beagle and four for a stretching cat.",
+        "origin": "generated",
+        "generated_for_date": "2026-10-24",
+        "generation_evidence": {
+          "tool": "built-in image_gen",
+          "reference": "demo-art/prompts.json#lesson",
+          "prompt": "Use case: scientific-educational. Asset type: one composite newspaper drawing lesson image, wide landscape about 2:1. Black pencil/ink line art on white. Two horizontal rows, four numbered stages per row. Top row: a beagle dog sitting upright, full-body three-quarter view, SAME pose in every stage: stage 1 two simple circles for head and chest; stage 2 add a seated body oval and two front leg guides; stage 3 add floppy ears, muzzle, paws and curled tail; stage 4 a finished friendly sitting beagle with grayscale markings. Bottom row: a domestic shorthair cat stretching in full-body side view, SAME pose throughout: stage 1 head circle and long body oval; stage 2 add extended front-leg guides and raised hindquarters; stage 3 add triangular ears, curved tail, paws and face; stage 4 finish the stretching cat with grayscale fur markings. The two animal poses must clearly differ. Each row has exactly four columns visibly numbered 1, 2, 3, 4. The only text in the image is those stage numbers, repeated once per row. No titles, labels, captions, extra animals or watermarks. Clear progressive construction and plenty of white space. Educational illustrations, not likenesses of real pets."
+        }
+      },
+      "drawing_lesson": {
+        "subjects": [
+          {
+            "species": "dog",
+            "breed": "Beagle",
+            "pose": "Seated, three-quarter view",
+            "illustrated_step_count": 4,
+            "steps": [
+              "Sketch two circles for the head and chest.",
+              "Add a seated body oval and front-leg guides.",
+              "Draw floppy ears, muzzle, paws and a curled tail.",
+              "Finish the face, outline and grayscale markings."
+            ]
+          },
+          {
+            "species": "cat",
+            "breed": "Domestic shorthair",
+            "pose": "Stretching, side view",
+            "illustrated_step_count": 4,
+            "steps": [
+              "Sketch a head circle and a long body oval.",
+              "Add extended front legs and raised hindquarters.",
+              "Draw triangular ears, a curved tail, paws and face.",
+              "Finish the outline and grayscale fur markings."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "personal-1",
+      "deck": "A fictional example of the morgan desk.",
+      "articles": [
+        {
+          "headline": "A reply and a small household task",
+          "paragraphs": [
+            "The fictional invitation needs a choice of volunteer session. The open tool-sorting task remains separate from that reply."
+          ],
+          "source_ids": [
+            "mail:reply",
+            "tasks:morgan-tools"
+          ],
+          "fact_ids": [
+            "adult-open"
+          ],
+          "task_ids": [
+            "tasks:morgan-tools"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "personal-2",
+      "deck": "A fictional example of the morgan desk.",
+      "articles": [
+        {
+          "headline": "An older request is settled",
+          "paragraphs": [
+            "A later fictional confirmation closes the old room question. The newspaper does not revive it as unfinished work."
+          ],
+          "source_ids": [
+            "mail:resolved"
+          ],
+          "fact_ids": [
+            "adult-resolved"
+          ],
+          "action_status": "completed"
+        }
+      ]
+    },
+    {
+      "id": "discussion-1",
+      "deck": "A fictional example of the talk with casey desk.",
+      "articles": [
+        {
+          "headline": "Choose a shared afternoon",
+          "paragraphs": [
+            "The two example adults have a weekend decision to make together. The discussion desk frames their choice without assigning an unagreed task."
+          ],
+          "source_ids": [
+            "mail:weekend"
+          ],
+          "fact_ids": [
+            "discussion1"
+          ],
+          "discussion_question": "Would we enjoy a library visit or a garden afternoon?",
+          "decision_needed": "Choose the activity and agree on a time together."
+        }
+      ]
+    },
+    {
+      "id": "discussion-2",
+      "deck": "A fictional example of the talk with casey desk.",
+      "articles": [
+        {
+          "headline": "Start with what is already on hand",
+          "paragraphs": [
+            "This fictional discussion concerns a shared garden plan and existing supplies. No spending figure or private financial record appears."
+          ],
+          "source_ids": [
+            "mail:supplies"
+          ],
+          "fact_ids": [
+            "discussion2"
+          ],
+          "discussion_question": "Which supplies can we reuse for the garden?",
+          "decision_needed": "Agree on the next small garden step."
+        }
+      ]
+    },
+    {
+      "id": "techmeme",
+      "deck": "A fictional example of the techmeme desk.",
+      "articles": [
+        {
+          "headline": "A view from the observatory",
+          "paragraphs": [
+            "This invented item occupies the technology-publication desk. It is not a summary of the real publication.",
+            "In production, discovery indexes lead to the original reporting. A headline or video description alone cannot establish the contents of an unread article or unseen video."
+          ],
+          "source_ids": [
+            "public:space"
+          ],
+          "fact_ids": [
+            "space"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "memeorandum",
+      "deck": "A fictional example of the memeorandum desk.",
+      "articles": [
+        {
+          "headline": "A route through the neighborhood",
+          "paragraphs": [
+            "This invented public-affairs item demonstrates a second dedicated publication desk.",
+            "A live edition would retain the original publisher, reporting date and clear attribution for analysis or opinion."
+          ],
+          "source_ids": [
+            "public:meeting"
+          ],
+          "fact_ids": [
+            "meeting"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "organization",
+      "deck": "A fictional example of the our organization desk.",
+      "articles": [
+        {
+          "headline": "A place to keep learning",
+          "paragraphs": [
+            "An invented training library supplies the selective reading item. Mandatory notices take priority when this two-page pair needs more room."
+          ],
+          "source_ids": [
+            "clips:training"
+          ],
+          "fact_ids": [
+            "training"
+          ]
+        },
+        {
+          "headline": "Survey and continuing service hours",
+          "paragraphs": [
+            "The fictional survey is a new topic. Service desk hours come from an older notice that still applies. Both topics receive their own source references."
+          ],
+          "source_ids": [
+            "notices:survey",
+            "notices:hours"
+          ],
+          "fact_ids": [
+            "notices"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "industry",
+      "deck": "A fictional example of the the industry world desk.",
+      "articles": [
+        {
+          "headline": "A workshop worth keeping on the list",
+          "paragraphs": [
+            "A smaller fictional newsletter announcement remains visible alongside the main stories. The all-topics check prevents a collected secondary topic from disappearing."
+          ],
+          "source_ids": [
+            "announcements:workshop"
+          ],
+          "fact_ids": [
+            "workshop"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "games-1",
+      "deck": "A fictional example of the comic and games desk.",
+      "articles": [],
+      "image": {
+        "path": "demo-art/back.png",
+        "alt": "A fictional adult reaches for tea and receives a tennis ball from an eager dog.",
+        "origin": "generated",
+        "generated_for_date": "2026-10-24",
+        "generation_evidence": {
+          "tool": "built-in image_gen",
+          "reference": "demo-art/prompts.json#back",
+          "prompt": "Use case: illustration-story. Asset type: wide family newspaper back-page comic, three equal side-by-side panels in ONE raster image, about 3:1. Fictional adult with short curly hair, round glasses and a plain orange pullover; all other elements black, white or neutral grayscale. Clean simple black line art on pure white, natural proportions and gentle school-age visual humor. Panel 1: adult sits at a table with a blank newspaper, reaches toward a mug of tea. Panel 2: a small grayscale dog deposits a tennis ball exactly in the adult's reaching hand. Panel 3: adult stands ready to throw the ball while the tea mug remains patiently on the table and dog sits eagerly. Clear setup and payoff, friendly household moment. No text, letters, numbers, word balloons, readable newspaper printing, brand marks or watermarks. Thin panel borders. Captions will be HTML outside art."
+        }
+      },
+      "comic": {
+        "premise": "The dog schedules a ball break before the tea break.",
+        "cast_ids": [
+          "morgan"
+        ],
+        "reference_ids": [],
+        "captions": [
+          "Time for a quiet cup.",
+          "A different refreshment request.",
+          "Tea can wait one throw."
+        ]
+      }
+    },
+    {
+      "id": "games-2",
+      "deck": "A fictional example of the more games desk.",
+      "articles": []
+    }
+  ],
+  "puzzles": {
+    "crossword": {
+      "grid": [
+        "HEART",
+        "EMBER",
+        "ABUSE",
+        "RESIN",
+        "TREND"
+      ],
+      "clues": [
+        {
+          "direction": "across",
+          "number": 1,
+          "answer": "HEART",
+          "clue": "What the gardener puts into the beds",
+          "personalized": true,
+          "personal_context": "Fictional household interests in gardening, nature and technology."
+        },
+        {
+          "direction": "across",
+          "number": 6,
+          "answer": "EMBER",
+          "clue": "Campfire glow, remembered by the camper",
+          "personalized": true,
+          "personal_context": "Fictional household interests in gardening, nature and technology."
+        },
+        {
+          "direction": "across",
+          "number": 7,
+          "answer": "ABUSE",
+          "clue": "What the household's kind humor avoids",
+          "personalized": true,
+          "personal_context": "Fictional household interests in gardening, nature and technology."
+        },
+        {
+          "direction": "across",
+          "number": 8,
+          "answer": "RESIN",
+          "clue": "Sticky stuff in a nature notebook",
+          "personalized": true,
+          "personal_context": "Fictional household interests in gardening, nature and technology."
+        },
+        {
+          "direction": "across",
+          "number": 9,
+          "answer": "TREND",
+          "clue": "A tech reader watches this direction",
+          "personalized": true,
+          "personal_context": "Fictional household interests in gardening, nature and technology."
+        },
+        {
+          "direction": "down",
+          "number": 1,
+          "answer": "HEART",
+          "clue": "Organ that pumps blood",
+          "personalized": false,
+          "personal_context": ""
+        },
+        {
+          "direction": "down",
+          "number": 2,
+          "answer": "EMBER",
+          "clue": "Glowing remnant of a fire",
+          "personalized": false,
+          "personal_context": ""
+        },
+        {
+          "direction": "down",
+          "number": 3,
+          "answer": "ABUSE",
+          "clue": "Mistreat",
+          "personalized": false,
+          "personal_context": ""
+        },
+        {
+          "direction": "down",
+          "number": 4,
+          "answer": "RESIN",
+          "clue": "Sticky plant secretion",
+          "personalized": false,
+          "personal_context": ""
+        },
+        {
+          "direction": "down",
+          "number": 5,
+          "answer": "TREND",
+          "clue": "General direction of change",
+          "personalized": false,
+          "personal_context": ""
+        }
+      ]
+    },
+    "jumble": {
+      "intro": "Unscramble the four words, then rearrange the circled letters for the bonus.",
+      "words": [
+        {
+          "answer": "PANEL",
+          "scrambled": "LPANE",
+          "circles": [
+            0
+          ]
+        },
+        {
+          "answer": "AGENT",
+          "scrambled": "TNEAG",
+          "circles": [
+            0
+          ]
+        },
+        {
+          "answer": "PAPER",
+          "scrambled": "RPAPE",
+          "circles": [
+            0
+          ]
+        },
+        {
+          "answer": "READER",
+          "scrambled": "EDARER",
+          "circles": [
+            1,
+            0
+          ]
+        }
+      ],
+      "bonus": "PAPER",
+      "bonus_clue": "The morning edition."
+    },
+    "sudoku": {
+      "grid": [
+        "207000090",
+        "009600045",
+        "530009000",
+        "040900000",
+        "090735000",
+        "370418020",
+        "723041809",
+        "000090030",
+        "906200004"
+      ],
+      "solution": [
+        "267354198",
+        "819627345",
+        "534189672",
+        "148962753",
+        "692735481",
+        "375418926",
+        "723541869",
+        "451896237",
+        "986273514"
+      ],
+      "instructions": "Fill each row, column and outlined 3 × 3 box with 1–9, once each."
+    },
+    "chess": {
+      "fen": "8/8/5K1k/8/3Q4/8/8/8 w - - 0 1",
+      "solution_uci": "d4h4",
+      "solution_san": "Qh4#",
+      "instructions": "White to move. Find the only move that gives immediate checkmate.",
+      "explanation": "The queen checks the king while the white king and queen cover every escape square. The checking queen cannot be captured legally."
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "tool": "built-in image_gen",
+  "mode": "fictional demo assets",
+  "prompts": [
+    {
+      "key": "comic",
+      "prompt": "Use case: illustration-story. Asset type: one wide newspaper comic strip, three equal side-by-side panels in a single raster image, wide 3:1 composition. Create a fictional short-haired school-age child wearing a teal top, otherwise all black, white and neutral grayscale; no real-person reference. Clear simple black line art on clean white paper, gentle visual humor suitable for upper elementary and middle school. Panel 1: child arranges three small pots on a sunny windowsill and proudly points to one tiny seedling. Panel 2: an ordinary grayscale cat curls up next to the pots; child carefully measures the seedling with a blank ruler. Panel 3: cat raises its tail straight up beside the seedling and the child looks at the towering tail with a surprised but amused expression. Natural proportions, kindness, no ridicule. No text, letters, numbers, captions, balloons, logos or watermarks. Thin panel borders. Leave no caption area inside art; captions will be typeset separately in HTML."
+    },
+    {
+      "key": "lesson",
+      "prompt": "Use case: scientific-educational. Asset type: one composite newspaper drawing lesson image, wide landscape about 2:1. Black pencil/ink line art on white. Two horizontal rows, four numbered stages per row. Top row: a beagle dog sitting upright, full-body three-quarter view, SAME pose in every stage: stage 1 two simple circles for head and chest; stage 2 add a seated body oval and two front leg guides; stage 3 add floppy ears, muzzle, paws and curled tail; stage 4 a finished friendly sitting beagle with grayscale markings. Bottom row: a domestic shorthair cat stretching in full-body side view, SAME pose throughout: stage 1 head circle and long body oval; stage 2 add extended front-leg guides and raised hindquarters; stage 3 add triangular ears, curved tail, paws and face; stage 4 finish the stretching cat with grayscale fur markings. The two animal poses must clearly differ. Each row has exactly four columns visibly numbered 1, 2, 3, 4. The only text in the image is those stage numbers, repeated once per row. No titles, labels, captions, extra animals or watermarks. Clear progressive construction and plenty of white space. Educational illustrations, not likenesses of real pets."
+    },
+    {
+      "key": "back",
+      "prompt": "Use case: illustration-story. Asset type: wide family newspaper back-page comic, three equal side-by-side panels in ONE raster image, about 3:1. Fictional adult with short curly hair, round glasses and a plain orange pullover; all other elements black, white or neutral grayscale. Clean simple black line art on pure white, natural proportions and gentle school-age visual humor. Panel 1: adult sits at a table with a blank newspaper, reaches toward a mug of tea. Panel 2: a small grayscale dog deposits a tennis ball exactly in the adult's reaching hand. Panel 3: adult stands ready to throw the ball while the tea mug remains patiently on the table and dog sits eagerly. Clear setup and payoff, friendly household moment. No text, letters, numbers, word balloons, readable newspaper printing, brand marks or watermarks. Thin panel borders. Captions will be HTML outside art.",
+      "correction": "Edit only the colors of this three-panel newspaper comic. Preserve all panel content, characters, poses, proportions, layout, borders, linework and the adult's ORANGE pullover exactly. Every other pixel must be black, white or neutral grayscale: turn skin, tennis ball, dog tongue, hair, dog, furniture, newspaper and background neutral grayscale. The orange pullover is the sole color accent. No new text or objects."
+    }
+  ]
+}

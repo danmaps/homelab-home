@@ -1,0 +1,4 @@
+interface:
+  display_name: "Personal Newspaper"
+  short_description: "Build a sourced newspaper from a configurable profile"
+  default_prompt: "Use $personal-newspaper to set up a newspaper for my household and prepare a checked PDF."

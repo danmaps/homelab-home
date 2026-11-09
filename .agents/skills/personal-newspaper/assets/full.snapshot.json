@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "mode": "demo",
+  "date": "2026-10-24",
+  "timezone": "Etc/UTC",
+  "sources": {
+    "calendar": {
+      "status": "demo",
+      "complete": false,
+      "observed_at": "2026-10-24T07:00:00+00:00",
+      "method": "demo",
+      "reason": "Invented records for the portable template; no account was accessed.",
+      "evidence": {
+        "tool": "synthetic_fixture",
+        "reference": "full.snapshot.json",
+        "scope": "All selected calendars, all-day events, cancellations and recurrence exceptions"
+      },
+      "items": [
+        {
+          "id": "calendar:walk",
+          "title": "A river walk",
+          "summary": "A fictional walk at 10 a.m. on Saturday.",
+          "source_label": "Fictional calendar records",
+          "event_date": "2026-10-24"
+        },
+        {
+          "id": "calendar:library",
+          "title": "An afternoon at the library",
+          "summary": "Fictional Sunday visit at 2 p.m.",
+          "source_label": "Fictional calendar records",
+          "event_date": "2026-10-25"
+        },
+        {
+          "id": "calendar:planning",
+          "title": "Community garden planning",
+          "summary": "A fictional planning conversation next Tuesday.",
+          "source_label": "Fictional calendar records",
+          "event_date": "2026-10-27"
+        },
+        {
+          "id": "calendar:telescope",
+          "title": "Telescope maintenance",
+          "summary": "A fictional equipment check on November 10.",
+          "source_label": "Fictional calendar records",
+          "event_date": "2026-11-10"
+        }
+      ]
+    },
+    "mail": {
+      "status": "demo",
+      "complete": false,
+      "observed_at": "2026-10-24T07:00:00+00:00",
+      "method": "demo",
+      "reason": "Invented records for the portable template; no account was accessed.",
+      "evidence": {
+        "tool": "synthetic_fixture",
+        "reference": "full.snapshot.json",
+        "scope": "Selected personal accounts, recent action messages and later replies"
+      },
+      "items": [
+        {
+          "id": "mail:reply",
+          "title": "A garden invitation needs a reply",
+          "summary": "A fictional invitation asks Morgan to choose a volunteer session.",
+          "source_label": "Fictional mail records",
+          "person_id": "morgan"
+        },
+        {
+          "id": "mail:resolved",
+          "title": "The old room request is closed",
+          "summary": "A later fictional confirmation closes the earlier room question.",
+          "source_label": "Fictional mail records",
+          "person_id": "morgan",
+          "action_status": "completed"
+        },
+        {
+          "id": "mail:weekend",
+          "title": "Choose a weekend activity",
+          "summary": "Morgan and Casey have two fictional options to discuss.",
+          "source_label": "Fictional mail records"
+        },
+        {
+          "id": "mail:supplies",
+          "title": "Decide what the garden needs",
+          "summary": "A fictional shared decision about using supplies already on hand.",
+          "source_label": "Fictional mail records"
+        }
+      ]
+    },
+    "tasks": {
+      "status": "demo",
+      "complete": false,
+      "observed_at": "2026-10-24T07:00:00+00:00",
+      "method": "demo",
+      "reason": "Invented records for the portable template; no account was accessed.",
+      "evidence": {
+        "tool": "synthetic_fixture",
+        "reference": "full.snapshot.json",
+        "scope": "Every open item, undated item and nested subtask in the exact named lists"
+      },
+      "items": [
+        {
+          "id": "tasks:morgan-scope",
+          "title": "Exact TODO scope checked",
+          "summary": "Fictional complete list scope including undated and nested items.",
+          "source_label": "Fictional tasks records",
+          "kind": "task_scope",
+          "person_id": "morgan",
+          "lists": [
+            "Morgan TODO"
+          ],
+          "all_open": true,
+          "undated": true,
+          "nested": true,
+          "scope_complete": true
+        },
+        {
+          "id": "tasks:jules-scope",
+          "title": "Exact TODO scope checked",
+          "summary": "Fictional complete list scope including undated and nested items.",
+          "source_label": "Fictional tasks records",
+          "kind": "task_scope",
+          "person_id": "jules",
+          "lists": [
+            "Jules TODO"
+          ],
+          "all_open": true,
+          "undated": true,
+          "nested": true,
+          "scope_complete": true
+        },
+        {
+          "id": "tasks:jules-books",
+          "title": "Pack the library books",
+          "summary": "An undated fictional open task.",
+          "source_label": "Fictional tasks records",
+          "kind": "task",
+          "person_id": "jules",
+          "state": "open"
+        },
+        {
+          "id": "tasks:jules-card",
+          "title": "Put the library card in the bag",
+          "summary": "A fictional nested subtask.",
+          "source_label": "Fictional tasks records",
+          "kind": "task",
+          "person_id": "jules",
+          "state": "open",
+          "parent_id": "tasks:jules-books"
+        },
+        {
+          "id": "tasks:morgan-tools",
+          "title": "Sort the garden tools",
+          "summary": "A fictional open personal task.",
+          "source_label": "Fictional tasks records",
+          "kind": "task",
+          "person_id": "morgan",
+          "state": "open"
+        }
+      ]
+    },
+    "school": {
+      "status": "demo",
+      "complete": false,
+      "observed_at": "2026-10-24T07:00:00+00:00",
+      "method": "demo",
+      "reason": "Invented records for the portable template; no account was accessed.",
+      "evidence": {
+        "tool": "synthetic_fixture",
+        "reference": "full.snapshot.json",
+        "scope": "All latest published grades, verified school term and current-term assignments"
+      },
+      "items": [
+        {
+          "id": "school:term",
+          "title": "School quarter 2",
+          "summary": "Fictional school-defined quarter dates.",
+          "source_label": "Fictional school records",
+          "kind": "school_term",
+          "person_id": "jules",
+          "term_id": "Q2",
+          "start_date": "2026-10-12",
+          "end_date": "2026-12-18"
+        },
+        {
+          "id": "school:grade-scope",
+          "title": "Latest gradebooks checked",
+          "summary": "All fictional latest published course books were checked.",
+          "source_label": "Fictional school records",
+          "kind": "grade_scope",
+          "person_id": "jules",
+          "all_latest": true
+        },
+        {
+          "id": "school:math",
+          "title": "Mathematics grade",
+          "summary": "A fictional published course mark.",
+          "source_label": "Fictional school records",
+          "kind": "grade",
+          "person_id": "jules",
+          "course": "Mathematics",
+          "mark": "A-",
+          "percent": "91%",
+          "term_id": "Q2"
+        },
+        {
+          "id": "school:science",
+          "title": "Science grade",
+          "summary": "A fictional published course mark.",
+          "source_label": "Fictional school records",
+          "kind": "grade",
+          "person_id": "jules",
+          "course": "Science",
+          "mark": "B+",
+          "percent": "88%",
+          "term_id": "Q2"
+        },
+        {
+          "id": "school:sketch",
+          "title": "Sketch a leaf",
+          "summary": "A fictional current-quarter unscored assignment.",
+          "source_label": "Fictional school records",
+          "kind": "assignment",
+          "person_id": "jules",
+          "term_id": "Q2",
+          "due_date": "2026-10-26",
+          "state": "unscored"
+        }
+      ]
+    },
+    "shared": {
+      "status": "demo",
+      "complete": false,
+      "observed_at": "2026-10-24T07:00:00+00:00",
+      "method": "demo",
+      "reason": "Invented records for the portable template; no account was accessed.",
+      "evidence": {
+        "tool": "synthetic_fixture",
+        "reference": "full.snapshot.json",
+        "scope": "School bulletin, lunch menu and activity opportunities"
+      },
+      "items": [
+        {
+          "id": "shared:lunch",
+          "title": "Monday lunch menu",
+          "summary": "Fictional published menu: vegetable pasta or a bean wrap.",
+          "source_label": "Fictional shared records",
+          "kind": "lunch"
+        },
+        {
+          "id": "shared:club",
+          "title": "An optional astronomy club evening",
+          "summary": "A fictional club offers an observing session; no household registration is implied.",
+          "source_label": "Fictional shared records",
+          "kind": "opportunity"
+        }
+      ]
+    },
+    "public": {
+      "status": "demo",
+      "complete": false,
+      "observed_at": "2026-10-24T07:00:00+00:00",
+      "method": "demo",
+      "reason": "Invented records for the portable template; no account was accessed.",
+      "evidence": {
+        "tool": "synthetic_fixture",
+        "reference": "full.snapshot.json",
+        "scope": "Current selected public discovery indexes, original stories and official video channels"
+      },
+      "items": [
+        {
+          "id": "public:space",
+          "title": "A small observatory opens its doors",
+          "summary": "An invented observatory story for the technology page.",
+          "source_label": "Fictional public records",
+          "content_scope": "fictional"
+        },
+        {
+          "id": "public:meeting",
+          "title": "The town discusses a walking route",
+          "summary": "An invented public-affairs story for layout review.",
+          "source_label": "Fictional public records",
+          "content_scope": "fictional"
+        },
+        {
+          "id": "public:animals",
+          "title": "How animals stretch",
+          "summary": "Fictional animal-reading selection based on the example child interests.",
+          "source_label": "Fictional public records",
+          "person_id": "jules",
+          "content_scope": "fictional"
+        }
+      ]
+    },
+    "clips": {
+      "status": "demo",
+      "complete": false,
+      "observed_at": "2026-10-24T07:00:00+00:00",
+      "method": "demo",
+      "reason": "Invented records for the portable template; no account was accessed.",
+      "evidence": {
+        "tool": "synthetic_fixture",
+        "reference": "full.snapshot.json",
+        "scope": "Newest dated selected reading issue"
+      },
+      "items": [
+        {
+          "id": "clips:training",
+          "title": "A new training library",
+          "summary": "An invented organization reading selection.",
+          "source_label": "Fictional clips records"
+        }
+      ]
+    },
+    "notices": {
+      "status": "demo",
+      "complete": false,
+      "observed_at": "2026-10-24T07:00:00+00:00",
+      "method": "demo",
+      "reason": "Invented records for the portable template; no account was accessed.",
+      "evidence": {
+        "tool": "synthetic_fixture",
+        "reference": "full.snapshot.json",
+        "scope": "Every topic in every new message, plus older still-active notices"
+      },
+      "items": [
+        {
+          "id": "notices:survey",
+          "title": "Staff survey",
+          "summary": "An invented new-message topic with a stated response window.",
+          "source_label": "Fictional notices records"
+        },
+        {
+          "id": "notices:hours",
+          "title": "Service desk hours",
+          "summary": "An older fictional notice that remains applicable.",
+          "source_label": "Fictional notices records"
+        }
+      ]
+    },
+    "announcements": {
+      "status": "demo",
+      "complete": false,
+      "observed_at": "2026-10-24T07:00:00+00:00",
+      "method": "demo",
+      "reason": "Invented records for the portable template; no account was accessed.",
+      "evidence": {
+        "tool": "synthetic_fixture",
+        "reference": "full.snapshot.json",
+        "scope": "Every new topic and still-active older announcement"
+      },
+      "items": [
+        {
+          "id": "announcements:workshop",
+          "title": "A public workshop",
+          "summary": "A fictional secondary newsletter announcement.",
+          "source_label": "Fictional announcements records"
+        }
+      ]
+    }
+  }
+}

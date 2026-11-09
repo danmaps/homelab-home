@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "mode": "demo",
+  "date": "2026-10-24",
+  "timezone": "Etc/UTC",
+  "sources": {
+    "calendar": {
+      "status": "demo", "complete": false, "observed_at": "2026-10-24T07:00:00+00:00", "method": "demo",
+      "reason": "Fictional calendar entries for demonstrating layout. No account was accessed.",
+      "evidence": {"tool": "synthetic_fixture", "reference": "demo.snapshot.json", "scope": "Two invented events"},
+      "items": [
+        {"id": "calendar:walk", "title": "A walk by the river", "summary": "Fictional Saturday walk at 10 a.m.", "source_label": "Fictional household calendar"},
+        {"id": "calendar:library", "title": "Library afternoon", "summary": "Fictional Sunday library visit at 2 p.m.", "source_label": "Fictional household calendar"}
+      ]
+    },
+    "community": {
+      "status": "demo", "complete": false, "observed_at": "2026-10-24T07:00:00+00:00", "method": "demo",
+      "reason": "A fictional newsletter containing three distinct topics. All three are covered on the reading page.",
+      "evidence": {"tool": "synthetic_fixture", "reference": "demo.snapshot.json", "scope": "Three invented newsletter topics"},
+      "items": [
+        {"id": "community:seed", "title": "Seed exchange", "summary": "An invented garden group plans a seed exchange.", "source_label": "Fictional community bulletin"},
+        {"id": "community:repair", "title": "Repair table", "summary": "An invented repair gathering welcomes small household objects.", "source_label": "Fictional community bulletin"},
+        {"id": "community:sky", "title": "A look at the sky", "summary": "An invented astronomy group describes a public observing evening, subject to weather.", "source_label": "Fictional community bulletin"}
+      ]
+    }
+  }
+}
