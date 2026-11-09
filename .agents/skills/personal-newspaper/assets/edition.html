@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>{{ e.title }} - {{ e.date }}</title>
+<style>{% include 'edition.css' %}</style></head>
+<body>
+{% macro source_line(values) %}<div class="sources">Sources: {% for item in citations(values) %}{% if item.source_url|default('') %}<a href="{{ item.source_url }}">{{ item.source_label }}: {{ item.title }}</a>{% else %}{{ item.source_label }}: {{ item.title }}{% endif %}{% if not loop.last %}; {% endif %}{% endfor %}</div>{% endmacro %}
+{% macro table_rows(article, field, columns) %}{% if article[field]|default([]) %}<table class="data"><thead><tr>{% for label, key in columns %}<th>{{ label }}</th>{% endfor %}</tr></thead><tbody>{% for identity in article[field] %}{% set row = source_item(identity) %}<tr>{% for label, key in columns %}<td>{% if key == 'parent_id' %}{{ parent_label(row[key]|default('')) }}{% else %}{{ row[key]|default('Undated' if key == 'due_date' else '') }}{% if field == 'task_ids' and key == 'title' and row.notes|default('') %}<br><span class="small">{{ row.notes }}</span>{% endif %}{% endif %}</td>{% endfor %}</tr>{% endfor %}</tbody></table>{% endif %}{% endmacro %}
+{% macro article_block(article) %}<article>
+{% if article.kicker|default('') %}<div class="kicker">{{ article.kicker }}</div>{% endif %}
+<h2>{{ article.headline }}</h2>
+{% for paragraph in article.paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+{{ table_rows(article, 'grade_ids', [('Course','course'),('Mark','mark'),('Percent','percent'),('Term','term_id')]) }}
+{{ table_rows(article, 'assignment_ids', [('Assignment','title'),('Due','due_date'),('Status','state'),('Term','term_id')]) }}
+{{ table_rows(article, 'task_ids', [('Open task or subtask','title'),('Due','due_date'),('Parent','parent_id')]) }}
+{% if article.table|default(none) %}<table class="data"><thead><tr>{% for h in article.table.headers %}<th>{{ h }}</th>{% endfor %}</tr></thead><tbody>{% for row in article.table.rows %}<tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>{% endfor %}</tbody></table>{% endif %}
+{% if article.steps|default([]) %}<ol>{% for step in article.steps %}<li>{{ step }}</li>{% endfor %}</ol>{% endif %}
+{% if article.discussion_question|default('') %}<p class="decision"><strong>Discuss:</strong> {{ article.discussion_question }}<br><strong>Decide together:</strong> {{ article.decision_needed }}</p>{% endif %}
+{{ source_line(article.source_ids) }}</article>{% endmacro %}
+{% macro puzzle_block(name) %}{% set puzzle = e.puzzles[name] %}{% set checked = qa.games[name] %}<section class="game">
+{% if name == 'crossword' %}<h2>The Mini / 5 x 5</h2><div class="crossword-area"><table class="crossword">{% for row in puzzle.grid %}{% set r=loop.index0 %}<tr>{% for cell in row %}{% set key = r|string ~ ',' ~ loop.index0|string %}<td class="{{ 'black' if cell == '#' else '' }}">{% if key in checked.labels %}<sup>{{ checked.labels[key] }}</sup>{% endif %}</td>{% endfor %}</tr>{% endfor %}</table><div class="clues">{% for direction in ['across','down'] %}<strong>{{ direction|upper }}</strong>{% for clue in puzzle.clues if clue.direction == direction %}<p>{{ clue.number }}. {{ clue.clue }}</p>{% endfor %}{% endfor %}</div></div><div class="upside">{% for clue in puzzle.clues %}{{ clue.number }}{{ clue.direction[0]|upper }} {{ clue.answer }}{% if not loop.last %} / {% endif %}{% endfor %}</div>
+{% elif name == 'jumble' %}<h2>The Jumble</h2><p>{{ puzzle.intro }}</p><div class="jumble-words">{% for word in puzzle.words %}<div class="jumble-word {{ 'long' if word.answer|length > 6 else '' }}"><div class="scramble">{{ word.scrambled }}</div><div class="boxes">{% for letter in word.answer %}<span class="box {{ 'circle' if loop.index0 in word.circles else '' }}"></span>{% endfor %}</div></div>{% endfor %}</div><p><strong>Bonus:</strong> {{ puzzle.bonus_clue }}</p><div class="boxes">{% for char in puzzle.bonus if char != ' ' %}<span class="box"></span>{% endfor %}</div><div class="upside">{% for word in puzzle.words %}{{ word.answer }} / {% endfor %}{{ puzzle.bonus }}</div>
+{% elif name == 'sudoku' %}<h2>Sudoku</h2><p>{{ puzzle.instructions }}</p><table class="sudoku">{% for row in checked.grid %}<tr>{% for value in row %}<td>{{ value if value != '0' else '' }}</td>{% endfor %}</tr>{% endfor %}</table><p class="small">{{ checked.givens }} givens. One verified solution.</p><div class="upside sudoku-key">{% for row in checked.solution %}<div>{{ row }}</div>{% endfor %}</div>
+{% elif name == 'chess' %}<h2>Chess / Mate in One</h2><p>{{ puzzle.instructions }}</p><div class="chess-diagram"><div class="ranks">{% for rank in [8,7,6,5,4,3,2,1] %}<span>{{ rank }}</span>{% endfor %}</div><table class="chessboard">{% for row in checked.rows %}{% set r=loop.index0 %}<tr>{% for piece in row %}<td class="{{ 'dark' if (r + loop.index0) % 2 else '' }}">{{ piece }}</td>{% endfor %}</tr>{% endfor %}</table></div><div class="files">{% for file in 'abcdefgh' %}<span>{{ file }}</span>{% endfor %}</div><p class="small">{{ checked.side }} to move. Exactly one legal mating move.</p><div class="upside">{{ checked.san }} / {{ puzzle.explanation }}</div>{% endif %}
+</section>{% endmacro %}
+{% for page in e.pages %}{% set section=p.sections[loop.index0] %}
+<section class="sheet {{ 'game-page' if section.kind|default('') == 'games' else '' }} {{ 'compact-page' if section.games|default([])|length > 2 else '' }}">
+<div class="eyebrow"><span>{{ e.date }} / {{ e.timezone }}</span><span>{{ section.title }}{% if section.part|default(0) %} / {{ section.part }} of 2{% endif %}</span></div>
+{% if loop.first %}<div class="motto">{{ p.motto|default('') }}</div><div class="masthead {{ 'blackletter' if p.feature_version|default(1) >= 2 else '' }}">{{ e.title }}</div>{% endif %}
+{% if e.mode == 'demo' %}<div class="sample">FICTIONAL SAMPLE / invented household and source data</div>{% endif %}
+<h1>{{ section.title }}</h1><p class="deck">{{ page.deck }}</p>
+{% if page.start_date|default('') %}<div class="window">{{ page.start_date }} through {{ page.end_date }}, inclusive</div>{% endif %}<hr>
+{% if page.image|default(none) %}<img class="hero" src="{{ image_uri(page.id) }}" alt="{{ page.image.alt }}">{% endif %}
+{% if page.comic|default(none) %}<div class="comic-captions">{% for caption in page.comic.captions %}<p>{{ caption }}</p>{% endfor %}</div>{% endif %}
+{% if page.drawing_lesson|default(none) %}<div class="lesson-grid">{% for subject in page.drawing_lesson.subjects %}<section><h2>{{ subject.breed }} {{ subject.species }}</h2><p class="small">{{ subject.pose }}</p><ol>{% for step in subject.steps %}<li>{{ step }}</li>{% endfor %}</ol></section>{% endfor %}</div>{% endif %}
+{% if page.articles %}<div class="stories {{ 'three-columns' if section.kind|default('') == 'reading' else '' }}">{% for article in page.articles %}{{ article_block(article) }}{% endfor %}</div>{% endif %}
+{% if page.front_week|default(none) %}<section class="week-strip"><h2>Sunday to Sunday / {{ page.front_week.start_date }} through {{ page.front_week.end_date }}</h2><table class="data"><tbody>{% for item in page.front_week['items'] %}<tr><td>{{ item.event_date }}</td><td><strong>{{ item.title }}</strong> {{ item.body|default('') }}{{ source_line(item.source_ids) }}</td></tr>{% endfor %}</tbody></table></section>{% endif %}
+{% if section.games|default([]) %}<div class="games-grid {{ 'compact' if section.games|length > 2 else '' }}">{% for game in section.games %}{{ puzzle_block(game) }}{% endfor %}</div>{% endif %}
+{% for note in page.coverage_notes|default([]) %}<aside class="coverage"><strong>{{ note.module }} / {{ note.status }}</strong>: {{ note.reason }}</aside>{% endfor %}
+{% if not qa.coverage.complete and loop.first %}<aside class="coverage"><strong>{{ 'Sample coverage' if e.mode == 'demo' else 'Coverage limits' }}</strong>{% for source in qa.coverage.sources if not source.current %}<p>{{ source.id }} / {{ source.status }}: {{ source.reason }}</p>{% endfor %}</aside>{% endif %}
+</section>{% endfor %}
+</body></html>

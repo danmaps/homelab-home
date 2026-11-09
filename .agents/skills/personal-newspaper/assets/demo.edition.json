@@ -1,0 +1,50 @@
+{
+  "schema_version": 1, "mode": "demo", "title": "The Household Gazette",
+  "date": "2026-10-24", "timezone": "Etc/UTC", "as_of": "2026-10-24T07:15:00+00:00",
+  "pages": [
+    {
+      "id": "today",
+      "deck": "A fictional Saturday edition showing how a personal newspaper can bring plans and reading into one place.",
+      "articles": [{
+        "kicker": "The day ahead", "headline": "Leave a little room for the river", "event_date": "2026-10-24",
+        "paragraphs": [
+          "The example household has a walk by the river penciled in for 10 a.m. The calendar entry is invented for this template; it is not a real invitation or a weather forecast.",
+          "A useful front page would put a verified time and any genuine preparation here. It would distinguish a tentative idea from a commitment, and leave unsupported details out.",
+          "The same page could carry a short weather report, an important decision or a change to today's plans. Those additions would each need their own source records. A missing calendar connection would be reported as unavailable coverage."
+        ], "source_ids": ["calendar:walk"], "fact_ids": ["demo:walk"]
+      }]
+    },
+    {
+      "id": "tomorrow", "start_date": "2026-10-25", "end_date": "2026-10-25",
+      "deck": "One local calendar day, with times and decisions that belong to tomorrow.",
+      "articles": [{
+        "kicker": "Sunday, October 25", "headline": "An afternoon among the shelves", "event_date": "2026-10-25",
+        "paragraphs": [
+          "The fictional calendar contains a library visit at 2 p.m. on Sunday. No real library schedule, reservation or opening hours have been checked.",
+          "In a live paper, the agent would read the selected calendar, check cancellations and recurrence exceptions, and resolve all-day dates in the household's time zone. It would avoid treating an unread source as a free day.",
+          "This separate page demonstrates the planning window check. An event dated outside October 25 would fail validation here. The seven-day and 30-day modules use the same calendar-day approach, with their inclusive bounds checked against the edition date."
+        ], "source_ids": ["calendar:library"], "fact_ids": ["demo:library"]
+      }]
+    },
+    {
+      "id": "reading", "deck": "Three topics from one fictional bulletin, including the smaller notices.",
+      "articles": [
+        {
+          "kicker": "In the garden", "headline": "Seeds to spare",
+          "paragraphs": ["An imaginary garden group plans a seed exchange. A real version would preserve the organizer, issue date, location and eligibility from the source, while omitting private details that do not help the reader.", "This notice is one distinct topic in a multi-topic bulletin. Its own source ID makes it possible to check that the reading page includes it."],
+          "source_ids": ["community:seed"], "fact_ids": ["demo:seed"]
+        },
+        {
+          "kicker": "Around the neighborhood", "headline": "A table for small repairs",
+          "paragraphs": ["A fictional repair gathering welcomes small household objects. Nothing in this example establishes a real event, a booking or the availability of a particular repair service.", "A live summary would distinguish a public opportunity from a household commitment. The agent would check any important deadline or attendance requirement before presenting it as current."],
+          "source_ids": ["community:repair"], "fact_ids": ["demo:repair"]
+        },
+        {
+          "kicker": "After dark", "headline": "Looking up together",
+          "paragraphs": ["An invented astronomy group describes an observing evening subject to weather. The template includes this secondary bulletin topic alongside the larger notices.", "The all-topics coverage rule checks every collected item against the configured reading page. It cannot discover an article the collecting agent skipped; the full bulletin still needs to be read and checked."],
+          "source_ids": ["community:sky"], "fact_ids": ["demo:sky"]
+        }
+      ]
+    }
+  ]
+}

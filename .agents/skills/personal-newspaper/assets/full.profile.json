@@ -1,0 +1,330 @@
+{
+  "schema_version": 1,
+  "feature_version": 2,
+  "setup_confirmed": true,
+  "title": "The Household Gazette",
+  "timezone": "Etc/UTC",
+  "paper": "Letter",
+  "city": "Example City",
+  "motto": "We checked your phone, so you don't have to.",
+  "allow_partial": true,
+  "members": [
+    {
+      "id": "morgan",
+      "name": "Morgan",
+      "role": "adult",
+      "todo_required": true,
+      "todo_lists": [
+        "Morgan TODO"
+      ],
+      "interests": [
+        "gardening",
+        "astronomy",
+        "technology"
+      ]
+    },
+    {
+      "id": "jules",
+      "name": "Jules",
+      "role": "child",
+      "academics_required": true,
+      "todo_required": true,
+      "todo_lists": [
+        "Jules TODO"
+      ],
+      "interests": [
+        "drawing",
+        "space",
+        "animals"
+      ],
+      "reading_level": "upper elementary",
+      "character_reference": "fictional-child-reference"
+    },
+    {
+      "id": "casey",
+      "name": "Casey",
+      "role": "adult",
+      "interests": [
+        "libraries",
+        "community events"
+      ]
+    }
+  ],
+  "owner_id": "morgan",
+  "planning": {
+    "enabled": true,
+    "front_week": true,
+    "family_scope": "parent_actions_only"
+  },
+  "sections": [
+    {
+      "id": "today",
+      "title": "Today",
+      "kind": "front"
+    },
+    {
+      "id": "tomorrow",
+      "title": "Tomorrow",
+      "kind": "planning",
+      "window": "tomorrow"
+    },
+    {
+      "id": "week",
+      "title": "Next Seven Days",
+      "kind": "planning",
+      "window": "week"
+    },
+    {
+      "id": "month",
+      "title": "Next 30 Days",
+      "kind": "planning",
+      "window": "month"
+    },
+    {
+      "id": "family-1",
+      "title": "The Family Desk",
+      "kind": "family",
+      "part": 1
+    },
+    {
+      "id": "family-2",
+      "title": "The Family Desk",
+      "kind": "family",
+      "part": 2
+    },
+    {
+      "id": "jules-1",
+      "title": "Jules",
+      "kind": "child",
+      "person_id": "jules",
+      "part": 1
+    },
+    {
+      "id": "jules-2",
+      "title": "Jules",
+      "kind": "child",
+      "person_id": "jules",
+      "part": 2
+    },
+    {
+      "id": "personal-1",
+      "title": "Morgan",
+      "kind": "personal",
+      "person_id": "morgan",
+      "part": 1
+    },
+    {
+      "id": "personal-2",
+      "title": "Morgan",
+      "kind": "personal",
+      "person_id": "morgan",
+      "part": 2
+    },
+    {
+      "id": "discussion-1",
+      "title": "Talk With Casey",
+      "kind": "discussion",
+      "person_id": "casey",
+      "part": 1
+    },
+    {
+      "id": "discussion-2",
+      "title": "Talk With Casey",
+      "kind": "discussion",
+      "person_id": "casey",
+      "part": 2
+    },
+    {
+      "id": "techmeme",
+      "title": "Techmeme",
+      "publication": "techmeme",
+      "kind": "reading"
+    },
+    {
+      "id": "memeorandum",
+      "title": "Memeorandum",
+      "publication": "memeorandum",
+      "kind": "reading"
+    },
+    {
+      "id": "organization",
+      "title": "Our Organization",
+      "pair_group": "industry-pair",
+      "kind": "reading"
+    },
+    {
+      "id": "industry",
+      "title": "The Industry World",
+      "pair_group": "industry-pair",
+      "kind": "reading"
+    },
+    {
+      "id": "games-1",
+      "title": "Comic and Games",
+      "kind": "games",
+      "games": [
+        "crossword",
+        "jumble"
+      ]
+    },
+    {
+      "id": "games-2",
+      "title": "More Games",
+      "kind": "games",
+      "games": [
+        "sudoku",
+        "chess"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "calendar",
+      "scope": "All selected calendars, all-day events, cancellations and recurrence exceptions",
+      "required": true,
+      "coverage": "selective",
+      "max_age_minutes": 60,
+      "page_ids": []
+    },
+    {
+      "id": "mail",
+      "scope": "Selected personal accounts, recent action messages and later replies",
+      "required": true,
+      "coverage": "selective",
+      "max_age_minutes": 60,
+      "page_ids": []
+    },
+    {
+      "id": "tasks",
+      "scope": "Every open item, undated item and nested subtask in the exact named lists",
+      "required": true,
+      "coverage": "selective",
+      "max_age_minutes": 60,
+      "page_ids": []
+    },
+    {
+      "id": "school",
+      "scope": "All latest published grades, verified school term and current-term assignments",
+      "required": true,
+      "coverage": "selective",
+      "max_age_minutes": 60,
+      "page_ids": []
+    },
+    {
+      "id": "shared",
+      "scope": "School bulletin, lunch menu and activity opportunities",
+      "required": true,
+      "coverage": "selective",
+      "max_age_minutes": 60,
+      "page_ids": []
+    },
+    {
+      "id": "public",
+      "scope": "Current selected public discovery indexes, original stories and official video channels",
+      "required": true,
+      "coverage": "selective",
+      "max_age_minutes": 60,
+      "page_ids": []
+    },
+    {
+      "id": "clips",
+      "coverage": "selective",
+      "page_ids": [
+        "organization",
+        "industry"
+      ],
+      "scope": "Newest dated selected reading issue",
+      "required": true,
+      "max_age_minutes": 60
+    },
+    {
+      "id": "notices",
+      "coverage": "all_topics",
+      "page_ids": [
+        "organization",
+        "industry"
+      ],
+      "scope": "Every topic in every new message, plus older still-active notices",
+      "required": true,
+      "max_age_minutes": 60
+    },
+    {
+      "id": "announcements",
+      "coverage": "all_topics",
+      "page_ids": [
+        "organization",
+        "industry"
+      ],
+      "scope": "Every new topic and still-active older announcement",
+      "required": true,
+      "max_age_minutes": 60
+    }
+  ],
+  "artwork": {
+    "mode": "optional",
+    "daily_fresh": true,
+    "comic_people": [
+      "jules"
+    ],
+    "back_comic": true,
+    "lesson_person_id": "jules",
+    "lesson_species": [
+      "dog",
+      "cat"
+    ],
+    "style": "Simple black line art; all elements grayscale except the configured tops",
+    "humor": "Gentle visual family humor with a clear payoff for school-age readers",
+    "tops": {
+      "jules": "teal",
+      "morgan": "orange"
+    },
+    "pets": [
+      {
+        "id": "pepper",
+        "name": "Pepper",
+        "reference": null,
+        "markings": "Ask the new user; optional cast, no appearance quota"
+      }
+    ]
+  },
+  "games": {
+    "enabled": [
+      "crossword",
+      "jumble",
+      "sudoku",
+      "chess"
+    ],
+    "pages": 2,
+    "personalized_ratio": 0.5
+  },
+  "privacy": {
+    "exclude": [
+      "credentials",
+      "street addresses",
+      "tracking numbers",
+      "private money"
+    ],
+    "medical_labels": "neutral"
+  },
+  "delivery": {
+    "channel": "local_pdf",
+    "recipients": []
+  },
+  "printing": {
+    "requested": false,
+    "printer": null,
+    "color": "Gray",
+    "duplex": "DuplexNoTumble",
+    "enabled": false,
+    "test_passed": false,
+    "physical_output_verified": false
+  },
+  "schedule": {
+    "enabled": false,
+    "requested": false,
+    "start": "05:00",
+    "ready_by": "05:50",
+    "deadline": "06:00"
+  },
+  "demo_note": "The compact share sample illustrates comics/lessons; text-only section pages keep its download small. New users can require one image on every page."
+}
