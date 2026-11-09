@@ -211,12 +211,19 @@ def validate(profile, snapshot, edition, edition_dir, history=None):
 def render(profile_path, snapshot_path, edition_path, output, workspace=None):
     from jinja2 import Environment, FileSystemLoader, StrictUndefined
     from pypdf import PdfReader
-    from weasyprint import HTML, default_url_fetcher
+    import weasyprint
+    HTML = weasyprint.HTML
+    default_url_fetcher = getattr(weasyprint, "default_url_fetcher", None) or weasyprint.URLFetcher()
 
     profile, snapshot, edition = (load(x) for x in (profile_path, snapshot_path, edition_path))
     history = load(Path(workspace) / ".local/edition-history.json") if workspace else None
     result = validate(profile, snapshot, edition, Path(edition_path).parent, history)
-    require(shutil.which("pdftoppm"), "Poppler pdftoppm is required for page previews.")
+    has_pdftoppm = bool(shutil.which("pdftoppm"))
+    if not has_pdftoppm:
+        try:
+            import pypdfium2 as pdfium
+        except ImportError:
+            require(False, "Poppler pdftoppm or pypdfium2 is required for page previews.")
     folder = Path(output).resolve()
     folder.mkdir(parents=True, exist_ok=False)
     if result["images"]:
@@ -296,10 +303,19 @@ def render(profile_path, snapshot_path, edition_path, output, workspace=None):
                     errors.append(f"Page {number}: a font is not embedded.")
     if any("Failed to load" in x or "cannot be loaded" in x for x in messages):
         errors.append("A font or artwork asset could not be loaded.")
-    previews = subprocess.run(["pdftoppm", "-r", "110", "-png", str(pdf), str(folder / "page")],
-                              capture_output=True, text=True, timeout=120)
-    if previews.returncode:
-        errors.append("Preview generation failed: " + previews.stderr[:300])
+    if has_pdftoppm:
+        previews = subprocess.run(["pdftoppm", "-r", "110", "-png", str(pdf), str(folder / "page")],
+                                  capture_output=True, text=True, timeout=120)
+        if previews.returncode:
+            errors.append("Preview generation failed: " + previews.stderr[:300])
+    else:
+        try:
+            doc = pdfium.PdfDocument(str(pdf))
+            width = len(str(len(doc)))
+            for idx, page in enumerate(doc, 1):
+                page.render(scale=110.0 / 72.0).to_pil().save(folder / f"page-{idx:0{width}d}.png")
+        except Exception as exc:
+            errors.append("Preview generation failed: " + str(exc)[:300])
     preview_files = sorted(folder.glob("page-*.png"))
     if len(preview_files) != len(reader.pages):
         errors.append("Preview count differs from the PDF page count.")
