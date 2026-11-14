@@ -3,6 +3,15 @@
   "telegramUsername": "danmaps_clawd_bot",
   "services": [
     {
+      "key": "deskbot",
+      "name": "Deskbot Camera",
+      "port": 18765,
+      "path": "/",
+      "publicUrl": "http://127.0.0.1:18765",
+      "internalOnly": true,
+      "repoUrl": "https://github.com/danmaps/deskbot"
+    },
+    {
       "key": "homelabhome",
       "name": "HomeLab Home",
       "port": "self",

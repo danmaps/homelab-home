@@ -650,6 +650,7 @@
   };
 
   function accessPill(result){
+    if (result?.reason === 'localhost-only') return '<span class="pill warn">INTERNAL</span>';
     if (result?.reason === 'no-published-port') return '<span class="pill warn">INTERNAL</span>';
     if (result?.reason === 'host-port-not-published') return '<span class="pill danger">PORT MISSING</span>';
     const host = result?.host || '';
@@ -660,6 +661,7 @@
   }
 
   function probePill(result){
+    if (result?.reason === 'localhost-only') return '<span class="pill warn">LOCAL ONLY</span>';
     if (result?.reason === 'no-published-port') return '<span class="pill warn">NO HOST PORT</span>';
     if (result?.reason === 'host-port-not-published') return '<span class="pill danger">PORT NOT PUBLISHED</span>';
     if (result?.probeOk) return '<span class="pill good">ROUTE OK</span>';
@@ -672,6 +674,7 @@
   }
 
   function accessHint(result){
+    if (result?.reason === 'localhost-only') return 'Host-local service; the dashboard does not probe or expose this route.';
     if (result?.reason === 'host-port-not-published') return result?.containerState === 'running'
       ? 'Container is running, but its configured host port is not published. The service is not reachable at the advertised route.'
       : 'The configured host port is not published and the container is not running.';

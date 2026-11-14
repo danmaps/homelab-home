@@ -62,6 +62,7 @@ function normalizeServices(services) {
       repoUrl: s.repoUrl ? String(s.repoUrl) : '',
       publicUrl: s.publicUrl ? String(s.publicUrl) : '',
       host: s.host ? String(s.host) : '',
+      internalOnly: Boolean(s.internalOnly),
       source: 'config',
     });
   }
@@ -209,6 +210,7 @@ function mergeServices(configServices, dockerServices) {
         port: existing.port ?? svc.port,
         host: svc.host || existing.host || '',
         publicUrl: svc.publicUrl || existing.publicUrl || '',
+        internalOnly: svc.internalOnly || existing.internalOnly || false,
         source: existing.source === 'docker' ? 'docker+config' : svc.source,
       });
     } else {
@@ -259,6 +261,18 @@ app.get('/api/status', async (_req, res) => {
         reason: running || healthy ? 'no-published-port' : 'container-not-running',
         containerState: s.containerState,
         health: s.health,
+        publishedPort: hostPortPublished,
+      };
+      continue;
+    }
+    if (s.internalOnly) {
+      results[s.key] = {
+        ok: false,
+        state: 'internal',
+        reason: 'localhost-only',
+        host: '127.0.0.1',
+        port: Number(s.port),
+        probeOk: false,
         publishedPort: hostPortPublished,
       };
       continue;
